@@ -99,4 +99,26 @@ int delete_child_bind(User *u, char *parent_name, char *name) {
 
     return res;
 }
+
+
+//list func
+
+
+
+List ReadAllLineFromConfig() {
+    FILE *f = fopen("resources/config.xml", "r");
+    List list;
+    list.line = malloc(sizeof(char*) * 100);
+    list.length = 0;
+
+    for(int i = 0; !feof(f); i++){ 
+        list.line[i] = malloc(sizeof(char) * 100);
+        fgets(list.line[i], 100, f);
+        list.length++;
+    }
+
+    fclose(f);
+
+    return list;
+} 
     
