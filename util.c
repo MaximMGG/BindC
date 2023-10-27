@@ -2,40 +2,101 @@
 
 
 Bind** create_user_bind(User *u) {
-    Bind **head_bind;
-    head_bind = malloc(sizeof(Bind) * u->lenths_of_binds);
-
-    for(int i = 0; i < u->lenths_of_binds; i++) {
-        head_bind[i] = malloc(sizeof(Bind));
+    if (u->binds == NULL) {
+        u->binds_length = 10;
+        u->binds = malloc(sizeof(Bind) * u->binds_length);
+    } else {
+        return u->binds;
     }
-
-    return head_bind;
+    return u->binds;
 }
 
-Bind * add_bind(User *u, char *name, char *value, char *parent_name, enum F f) {
-    if (f == PARENT) {
-        Bind b = {name, value, NULL};
-        u->binds[u->binds_count] = &b;
-        u->binds_count++;
-    } else {
-        for(int i = 0; i < u->binds_count; i++){
-            if (u->binds[i]->name == parent_name) {
-                Bind b = {name, value, NULL};
-                Bind *parent_bind = u->binds[i];
-                if (parent_bind->child == NULL) {
-                    // parent_bind->child = ;
-                }
+
+Bind * add_bind(User *u, char *name, char *value) {
+    u->binds[u->binds_count] = malloc(sizeof(Bind));
+    u->binds[u->binds_count]->name = name;
+    u->binds[u->binds_count]->value = value;
+    u->binds[u->binds_count]->child = NULL;
+    u->binds_count++;
+
+    if (u->binds_count == 10) {
+        u->binds_length *= 2;
+        u->binds = realloc(u->binds, sizeof(Bind) * u->binds_length);
+    }
+}
+
+
+ChildBind * add_child_bind(User *u, char *parent_name, char *name, char *value) {
+    for(int i = 0; i < u->binds_count; i++){
+        if (strcmp(u->binds[i]->name, parent_name)) {
+            Bind *tmp = u->binds[i];
+
+            if (tmp->child == NULL) {
+                tmp->children_length = 10;
+                tmp->children_count = 0;
+                tmp->child = malloc(sizeof(ChildBind) * tmp->children_length);
+                tmp->child[0] = malloc(sizeof(ChildBind));
+                tmp->child[0]->name = name;
+                tmp->child[0]->value = value;
+            } else {
+                tmp->child[tmp->children_count] = malloc(sizeof(ChildBind));
+                tmp->child[tmp->children_count]->name = name;
+                tmp->child[tmp->children_count]->value = value;
             }
         }
     }
+    return 0;
 }
 
 
-Bind **create_children(User *u) {
-    Bind **children;
-    children = malloc(sizeof(Bind) * u->lenths_of_binds);
-    for(int i = 0; i < u->lenths_of_binds; i++){
-        children[i] = malloc(sizeof(Bind));
+int delete_bind(User *u, char *name) {
+    int res = 1;
+    for(int i = 0; i < u->binds_count; i++){
+
+        if (strcmp(u->binds[i]->name, name)) {
+            free(u->binds[i]);
+            res = 0;
+            if (i == u->binds_count - 1) {
+                u->binds_count--;
+                break;
+            } else {
+                for(int j = i; j < u->binds_count; j++){
+                    u->binds[j] = u->binds[j + 1];
+                }
+                u->binds_count--;
+            }
+        }
     }
-    return children;
+    return res;
 }
+
+
+
+int delete_child_bind(User *u, char *parent_name, char *name) {
+
+    int res = 1;
+
+    for(int i = 0; i < u->binds_count; i++){
+        if (strcmp(u->binds[i]->name, parent_name)) {
+            Bind *tmp = u->binds[i];
+            for(int j = 0; j < tmp->children_count; j++){
+                if (strcmp(tmp->child[j]->name, name)) {
+                    free(tmp->child[j]);
+                    if (j == tmp->children_count - 1) {
+                        tmp->children_count--;
+                        break;
+                    } else {
+                        for(int k = j; k < tmp->children_count; k++){
+                            tmp->child[k] = tmp->child[k + 1];
+                        }
+                        tmp->children_count--;
+                        break;
+                    }
+                } 
+            }
+        }
+    }
+
+    return res;
+}
+    
