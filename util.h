@@ -3,8 +3,8 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define ptc "resources/config.xml"
-#define ptt "https://translate.google.com/?hl=ru&sl=en&tl=ru&text=%s%%0A&op=translate"
+#define PATH_TO_CONFIG "resources/config.xml"
+#define PATH_TO_TRANSLATOR "https://translate.google.com/?hl=ru&sl=en&tl=ru&text=%s%%0A&op=translate"
 
 
 typedef struct {
@@ -48,3 +48,4 @@ List ReadAllLineFromConfig();
 
 //End List func
 
+char ** parsUserEnter(char *user_enter, int length);

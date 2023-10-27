@@ -1,6 +1,8 @@
 #include "util.h"
 
 
+
+
 Bind** create_user_bind(User *u) {
     if (u->binds == NULL) {
         u->binds_length = 10;
@@ -106,15 +108,21 @@ int delete_child_bind(User *u, char *parent_name, char *name) {
 
 
 List ReadAllLineFromConfig() {
-    FILE *f = fopen("resources/config.xml", "r");
+    FILE *f = fopen(PATH_TO_CONFIG, "r");
     List list;
-    list.line = malloc(sizeof(char*) * 100);
+    int line_count = 100;
+    list.line = malloc(sizeof(char*) * line_count);
     list.length = 0;
 
     for(int i = 0; !feof(f); i++){ 
         list.line[i] = malloc(sizeof(char) * 100);
         fgets(list.line[i], 100, f);
         list.length++;
+
+        if (list.length >= line_count) {
+            line_count *= 2;
+            list.line = realloc(list.line, sizeof(char*) * line_count);
+        }
     }
 
     fclose(f);
@@ -122,3 +130,27 @@ List ReadAllLineFromConfig() {
     return list;
 } 
     
+//list func end
+
+
+char ** parsUserEnter(char *user_enter, int length) {
+
+    char **parsed_enter = malloc(sizeof(char *) * 10);
+    int command = 0;
+    char *buffer = malloc(sizeof(char) * 100);
+
+    for(int i = 0; length; i++){
+        if (user_enter[i] == ' ' || user_enter[i] == '\0') {
+            buffer[i] = '\0';
+            parsed_enter[command] = malloc(sizeof(buffer));
+            strcpy(parsed_enter[command], buffer);
+            command++;
+        } else {
+            buffer[i] = user_enter[i];
+        }
+    }
+
+    free(buffer);
+
+    return parsed_enter;
+}
