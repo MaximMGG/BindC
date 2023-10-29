@@ -60,3 +60,10 @@ void ShowHelp() {
     puts("c:");
 }
 
+
+
+//TODO (Maxim) need to add fuctional for adding dictianary and binds
+void InitUser() {
+    List *list = ReadAllLineFromConfig();
+}
+

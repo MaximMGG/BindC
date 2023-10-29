@@ -44,7 +44,8 @@ int delete_child_bind(User *u, char *parent_name, char *name);
 
 // List func
 
-List ReadAllLineFromConfig();
+List *ReadAllLineFromConfig();
+List *CreateUserConfig();
 
 //End List func
 

@@ -105,28 +105,66 @@ int delete_child_bind(User *u, char *parent_name, char *name) {
 
 //list func
 
+List *CreateUserConfig() {
+    FILE *f = fopen(PATH_TO_CONFIG, "w");
+    
+    List *list = malloc(sizeof(*list));
+    
+    list->line = malloc(sizeof(char *) * 10);
+    for(int i = 0; i < 10; i++){
+        list->line[i] = malloc(sizeof(char) * 64);
+    }
+
+    fprintf(f, "<PathToDir>\n");
+    fprintf(f, "\t<path>p</path>\n");
+    fprintf(f, "</PathToDir>\n");
+
+    fprintf(f, "<Bind>\n");
+    fprintf(f, "<\tParentBind>\n");
+    fprintf(f, "\t\t<ChildBinds>");
+    fprintf(f, "\t\t</ChildBinds>");
+    fprintf(f, "<\t/ParentBind>\n");
+    fprintf(f, "</Bind>\n");
+
+    strcpy(list->line[0], "<PathToDir>\n");
+    strcpy(list->line[1], "\t<path>p</path>\n");
+    strcpy(list->line[2], "</PathToDir>\n");
+    strcpy(list->line[3], "<Bind>\n");
+    strcpy(list->line[4], "<\tParentBind>\n");
+    strcpy(list->line[5], "\t\t<ChildBinds>");
+    strcpy(list->line[6], "\t\t</ChildBinds>");
+    strcpy(list->line[7], "<\t/ParentBind>\n");
+    strcpy(list->line[8], "</Bind>\n");
+
+    list->length = 9;
+
+    return list;
+}
 
 
-List ReadAllLineFromConfig() {
+List *ReadAllLineFromConfig() {
     FILE *f = fopen(PATH_TO_CONFIG, "r");
-    List list;
+    List *list;
+    if (f == NULL) {
+        list = CreateUserConfig(); 
+    }
+    //TODO (Maxim) write functional if list null
     int line_count = 100;
-    list.line = malloc(sizeof(char*) * line_count);
-    list.length = 0;
+    list->line = malloc(sizeof(char*) * line_count);
+    list->length = 0;
 
     for(int i = 0; !feof(f); i++){ 
-        list.line[i] = malloc(sizeof(char) * 100);
-        fgets(list.line[i], 100, f);
-        list.length++;
+        list->line[i] = malloc(sizeof(char) * 100);
+        fgets(list->line[i], 100, f);
+        list->length++;
 
-        if (list.length >= line_count) {
+        if (list->length >= line_count) {
             line_count *= 2;
-            list.line = realloc(list.line, sizeof(char*) * line_count);
+            list->line = realloc(list->line, sizeof(char*) * line_count);
         }
     }
 
     fclose(f);
-
     return list;
 } 
     
