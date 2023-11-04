@@ -25,6 +25,7 @@ Bind * add_bind(User *u, char *name, char *value) {
         u->binds_length *= 2;
         u->binds = realloc(u->binds, sizeof(Bind) * u->binds_length);
     }
+    return u->binds[u->binds_count - 1];
 }
 
 
@@ -191,4 +192,14 @@ char ** parsUserEnter(char *user_enter, int length) {
     free(buffer);
 
     return parsed_enter;
+}
+
+
+
+//TODO(Maxim) not work yet
+void showTranslation(const char *variable) {
+    char *tr_link = str_format(PATH_TO_TRANSLATOR, variable);
+    char *fox = str_format("firefox %s", tr_link);
+    char *enter = "firefox %s";
+    system(enter);
 }

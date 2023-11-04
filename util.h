@@ -1,7 +1,11 @@
+#ifndef _UTIL_H_
+#define _UTIL_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include "my_string.h"
 
 #define PATH_TO_CONFIG "resources/config.xml"
 #define PATH_TO_TRANSLATOR "https://translate.google.com/?hl=ru&sl=en&tl=ru&text=%s%%0A&op=translate"
@@ -49,4 +53,14 @@ List *CreateUserConfig();
 
 //End List func
 
+//Flag realisation funcs
+
+void showTranslation(const char *);
+
+
+//End of flag realisation funcs
+
+
 char ** parsUserEnter(char *user_enter, int length);
+
+#endif

@@ -1,4 +1,5 @@
 #include "util.h"
+#include "my_string.h"
 
 
 
@@ -11,7 +12,7 @@ int main() {
     InitUser();
    
     char *user_enter;
-    gets_s(user_enter, 100);
+   	// gets(user_enter, 100);
 
     while(!strcmp(user_enter, "exit")) {
 
@@ -36,7 +37,7 @@ int main() {
         }
       
 
-        gets_s(user_enter, 100);
+        fgets(user_enter, 100, stdin);
     }
 
     return 0;
