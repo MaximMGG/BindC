@@ -121,14 +121,14 @@ List *CreateUserConfig() {
     strcpy(list->line[1], "\t<path>p</path>\n");
     strcpy(list->line[2], "</PathToDir>\n");
     strcpy(list->line[3], "<Bind>\n");
-    strcpy(list->line[4], "<\tParentBind>\n");
-    strcpy(list->line[5], "\t\t<ChildBinds>");
-    strcpy(list->line[6], "\t\t</ChildBinds>");
-    strcpy(list->line[7], "<\t/ParentBind>\n");
+    strcpy(list->line[4], "\t<ParentBind>\n");
+    strcpy(list->line[5], "\t\t<ChildBinds>\n");
+    strcpy(list->line[6], "\t\t</ChildBinds>\n");
+    strcpy(list->line[7], "\t</ParentBind>\n");
     strcpy(list->line[8], "</Bind>\n");
 
     for (int i = 0; i < 9; i++){
-        fprintf(f, "%s", list->line[i]);
+        fputs(list->line[i], f);
     }
 
     list->length = 9;
@@ -149,7 +149,8 @@ List * ReadAllLineFromConfig() {
     }
 
     int line_count = 100;
-
+        
+    list = malloc(sizeof(*list));
     list->line = malloc(sizeof(char*) * line_count);
     list->length = 0;
 
@@ -176,16 +177,18 @@ char ** parsUserEnter(char *user_enter, int length) {
 
     char **parsed_enter = malloc(sizeof(char *) * 10);
     int command = 0;
+
     char *buffer = malloc(sizeof(char) * 100);
 
-    for(int i = 0; length; i++){
-        if (user_enter[i] == ' ' || user_enter[i] == '\0') {
-            buffer[i] = '\0';
-            parsed_enter[command] = malloc(sizeof(buffer));
+    for(int i = 0, j = 0; i < length; i++, j++){
+        if (user_enter[i] == ' ' || user_enter[i] == '\0' || user_enter[i] == '\n') {
+            buffer[j] = '\0';
+            parsed_enter[command] = malloc(sizeof(*buffer));
             strcpy(parsed_enter[command], buffer);
             command++;
+            j = -1;
         } else {
-            buffer[i] = user_enter[i];
+            buffer[j] = user_enter[i];
         }
     }
 
@@ -200,6 +203,5 @@ char ** parsUserEnter(char *user_enter, int length) {
 void showTranslation(const char *variable) {
     char *tr_link = str_format(PATH_TO_TRANSLATOR, variable);
     char *fox = str_format("firefox %s", tr_link);
-    char *enter = "firefox %s";
-    system(enter);
+    system(fox);
 }

@@ -11,9 +11,9 @@ int main() {
     InitUser();
    
     char *user_enter;
-   	// gets(user_enter, 100);
+    fgets(user_enter, 100, stdin);
 
-    while(!strcmp(user_enter, "exit")) {
+    while((strcmp(user_enter, "exit")) != 0) {
 
         char **user_command = parsUserEnter(user_enter, strlen(user_enter));
 

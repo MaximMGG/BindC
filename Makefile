@@ -8,10 +8,7 @@ SRC = $(wildcard $(PR_SRC)*.c)
 OBJ = $(patsubst $(PR_SRC)%.c, $(PR_OBJ)%.o, $(SRC))
 
 $(TARGET) : $(OBJ)
-	$(CC)  $(OBJ) -o $(TRAGET)
-
-debug :  
-	$(CC) $(SRC) -g 
+	$(CC) $(OBJ) -o $(TARGET)
 
 $(PR_OBJ)%.o : $(PR_SRC)%.c
 	$(CC) -c $< -o $@
@@ -19,3 +16,5 @@ $(PR_OBJ)%.o : $(PR_SRC)%.c
 clean : 
 	rm $(PR_OBJ)*.o $(TARGET)
 
+debug :  
+	$(CC) $(SRC) -g 
