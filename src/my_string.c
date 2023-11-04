@@ -34,6 +34,26 @@ char * mapDoubleToString(double buf) {
     return NULL;
 }
 
+/*
+ * return 0 if one and two strings not the same
+ * return 1 if one and two strings are the same
+*/
+int str_cmp(str *one, str *two) {
+    unsigned int one_length = str_length(one->str);
+    unsigned int two_length = str_length(two->str);
+
+    if (one_length != two_length) {
+        return 0;
+    } else {
+        for(int i = 0; i < one_length; i++) {
+            if (one->str[i] != two->str[i]) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
 char * mapIntToString(int buf) {
 
     char *s = malloc(sizeof(char) * 10);
@@ -77,22 +97,22 @@ char * str_set(char *s) {
 
 str *cr_str(char *s) {
     str *p_s = malloc(sizeof(*p_s));
-    p_s->string = str_set(s);
+    p_s->str = str_set(s);
     p_s->length = str_length(s);
     return p_s;
 }
 
 void * str_cpy(str *to, str *from) {
-    to->string = realloc(to, sizeof(char) * (str_length(from->string)));
-    if (to->string == NULL) {
+    to->str = realloc(to, sizeof(char) * (str_length(from->str)));
+    if (to->str == NULL) {
         return NULL;
     }
 
     int length = 0;
 
     for(int i = 0; ; i++){
-        if ((from->string[i] = '\0')) {
-            to->string[i] = '\0';
+        if ((from->str[i] = '\0')) {
+            to->str[i] = '\0';
             to->length = i;
             break;
         }
@@ -169,7 +189,6 @@ char * str_format(char *s,...) {
                     s = _str_cpy(s, temp_symb);
                     break;
                     }
-                
             }
         }
 
