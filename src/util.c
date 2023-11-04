@@ -112,6 +112,7 @@ List *CreateUserConfig() {
     List *list = malloc(sizeof(*list));
     
     list->line = malloc(sizeof(char *) * 10);
+
     for(int i = 0; i < 10; i++){
         list->line[i] = malloc(sizeof(char) * 64);
     }
@@ -127,21 +128,24 @@ List *CreateUserConfig() {
     strcpy(list->line[8], "</Bind>\n");
 
     for (int i = 0; i < 9; i++){
-        fwrite(list->line, 1, sizeof(list->line), f);
+        fprintf(f, "%s", list->line[i]);
     }
 
     list->length = 9;
 
+    fclose(f);
     return list;
 }
 
 
 List * ReadAllLineFromConfig() {
     FILE *f = fopen(PATH_TO_CONFIG, "r");
+
     List *list;
 
     if (f == NULL) {
         list = CreateUserConfig(); 
+        return list;
     }
 
     int line_count = 100;
@@ -151,6 +155,7 @@ List * ReadAllLineFromConfig() {
 
     for(int i = 0; !feof(f); i++){ 
         list->line[i] = malloc(sizeof(char) * 100);
+
         fgets(list->line[i], 100, f);
         list->length++;
 

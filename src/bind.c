@@ -7,7 +7,7 @@ void InitUser();
 
 int main() {
 
-    puts("Hello let's start or enter help for show some referencies");
+    // puts("Hello let's start or enter help for show some referencies");
     InitUser();
    
     char *user_enter;

@@ -1,29 +1,7 @@
 <PathToDir>
-c:/users/maxim/desktop/EnglishWords/
+	<path>p</path>
 </PathToDir>
-<Binds>
 <Bind>
-<name>github</name>
-<value>https://github.com/MaximMGG</value>
-<ChildrenBinds>
-<ChildrenBind>
-<name>bindhelper</name>
-<value>https://github.com/MaximMGG/BindHelper</value>
-</ChildrenBind>
-<ChildrenBind>
-<name>memori</name>
-<value>https://github.com/MaximMGG/memoriseHelperV2</value>
-</ChildrenBind>
-</ChildrenBinds>
+<	ParentBind>
+		<ChildBinds>		</ChildBinds><	/ParentBind>
 </Bind>
-<Bind>
-<name>youtube</name>
-<value>https://www.youtube.com/</value>
-<ChildrenBinds>
-<ChildrenBind>
-<name>dmdev</name>
-<value>https://www.youtube.com/@dmdev/playlists</value>
-</ChildrenBind>
-</ChildrenBinds>
-</Bind>
-</Binds>
