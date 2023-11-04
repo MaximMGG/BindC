@@ -1,4 +1,4 @@
-#include "util.h"
+#include "../headers/util.h"
 
 
 
@@ -116,17 +116,6 @@ List *CreateUserConfig() {
         list->line[i] = malloc(sizeof(char) * 64);
     }
 
-    fprintf(f, "<PathToDir>\n");
-    fprintf(f, "\t<path>p</path>\n");
-    fprintf(f, "</PathToDir>\n");
-
-    fprintf(f, "<Bind>\n");
-    fprintf(f, "<\tParentBind>\n");
-    fprintf(f, "\t\t<ChildBinds>");
-    fprintf(f, "\t\t</ChildBinds>");
-    fprintf(f, "<\t/ParentBind>\n");
-    fprintf(f, "</Bind>\n");
-
     strcpy(list->line[0], "<PathToDir>\n");
     strcpy(list->line[1], "\t<path>p</path>\n");
     strcpy(list->line[2], "</PathToDir>\n");
@@ -137,20 +126,26 @@ List *CreateUserConfig() {
     strcpy(list->line[7], "<\t/ParentBind>\n");
     strcpy(list->line[8], "</Bind>\n");
 
+    for (int i = 0; i < 9; i++){
+        fwrite(list->line, 1, sizeof(list->line), f);
+    }
+
     list->length = 9;
 
     return list;
 }
 
 
-List *ReadAllLineFromConfig() {
+List * ReadAllLineFromConfig() {
     FILE *f = fopen(PATH_TO_CONFIG, "r");
     List *list;
+
     if (f == NULL) {
         list = CreateUserConfig(); 
     }
-    //TODO (Maxim) write functional if list null
+
     int line_count = 100;
+
     list->line = malloc(sizeof(char*) * line_count);
     list->length = 0;
 

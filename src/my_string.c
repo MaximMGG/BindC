@@ -1,5 +1,4 @@
-#include "my_string.h"
-#include <stdio.h>
+#include "../headers/my_string.h"
 
 unsigned int str_length(char *buf) {
     unsigned int length = 0;
@@ -78,22 +77,22 @@ char * str_set(char *s) {
 
 str *cr_str(char *s) {
     str *p_s = malloc(sizeof(*p_s));
-    p_s->str = str_set(s);
+    p_s->string = str_set(s);
     p_s->length = str_length(s);
     return p_s;
 }
 
 void * str_cpy(str *to, str *from) {
-    to->str = realloc(to, sizeof(char) * (str_length(from->str)));
-    if (to->str == NULL) {
+    to->string = realloc(to, sizeof(char) * (str_length(from->string)));
+    if (to->string == NULL) {
         return NULL;
     }
 
     int length = 0;
 
     for(int i = 0; ; i++){
-        if ((from->str[i] = '\0')) {
-            to->str[i] = '\0';
+        if ((from->string[i] = '\0')) {
+            to->string[i] = '\0';
             to->length = i;
             break;
         }
