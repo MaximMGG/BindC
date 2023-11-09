@@ -13,18 +13,20 @@ int main() {
     char *user_enter;
     fgets(user_enter, 100, stdin);
 
-    while((strcmp(user_enter, "exit")) != 0) {
+    while(!(compare_string(user_enter, "exit"))) {
 
         char **user_command = parsUserEnter(user_enter, strlen(user_enter));
 
-        if (strcmp(user_command[0], "show")) {
+        if (compare_string(user_enter, "show")) {
             ShowHelp();
         }
 
         //TODO (Maxim) think about switch statement for user_command array
         switch (user_command[0][0]) {
-            case 't':
-                break;
+            case 't': {
+                    showTranslation(user_command[1]); 
+                    break;
+                }
             case 'a':
                 break;
             case 'f':

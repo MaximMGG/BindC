@@ -63,4 +63,13 @@ void showTranslation(const char *);
 
 char ** parsUserEnter(char *user_enter, int length);
 
+
+//utility func
+
+//compare two strings return 1 if the same and 0 if not
+int compare_string(char *, char *);
+
+
+// end utility func
+
 #endif

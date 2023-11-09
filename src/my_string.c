@@ -11,6 +11,7 @@ unsigned int str_length(char *buf) {
     return length;
 }
 
+
 int ** getPacOfDicimal() {
     int **buf = malloc(sizeof(int *) * 9);
     for(int i = 0; i < 9; i++) {
@@ -32,6 +33,34 @@ char * mapDoubleToString(double buf) {
 
 
     return NULL;
+}
+
+str * str_concat(str *first, str *second, char symbol) {
+    char* buf = malloc(sizeof(char) * (first->length + second->length) + sizeof(symbol));
+    int i = 0;
+    int j = 0;
+    
+    for( ; ;i++) {
+        if (first->str[i] == '\0') {
+            buf[i] = symbol;
+            i++;
+            break;
+        }
+        buf[i] = first->str[i];
+    }
+
+    for( ; ;i++, j++) {
+        if (second->str[j] == '\0') {
+            buf[i] = '\0';
+            break;
+        }
+        buf[i] = second->str[j];
+    }
+
+    str *new = cr_str(buf);
+    free(buf);
+
+    return new;
 }
 
 /*
@@ -75,6 +104,7 @@ char * mapIntToString(int buf) {
         }
         if (buf <= 9) {
             s[s_index] = buf + 48;
+            s[s_index + 1] = '\0';
             break;
         }
     }
@@ -96,7 +126,7 @@ char * str_set(char *s) {
 }
 
 str *cr_str(char *s) {
-    str *p_s = malloc(sizeof(*p_s));
+    str *p_s = malloc(sizeof(char) * str_length(s));
     p_s->str = str_set(s);
     p_s->length = str_length(s);
     return p_s;
@@ -122,8 +152,6 @@ void * str_cpy(str *to, str *from) {
 }
 
 char * _str_cpy(char *target, char *buf) {
-    target = malloc(sizeof(char) * str_length(buf));
-
     for(int i = 0; ; i++) {
         if (buf[i] == '\0') {
             target[i] = '\0';
@@ -156,7 +184,7 @@ char * insertString(char *s, char *tmp, int pos){
         }
         buf[index] = s[i];
     }
-    char * tt;
+    char * tt = malloc(sizeof(char) * str_length(buf));
     tt = _str_cpy(tt, buf);
     free(buf);
     return tt;
@@ -166,27 +194,29 @@ char * insertString(char *s, char *tmp, int pos){
 char * str_format(char *s,...) {
     va_list li;
     va_start(li, s);
-    char *buf_s = malloc(sizeof(char *));
-    int buf_i;
+    char *tmp = malloc(sizeof(char) * str_length(s));
+    tmp = _str_cpy(tmp, s);
 
     for(int i = 0; s[i] != '\0'; i++){
         if (s[i] == '%') {
             switch(s[i + 1]) {
                 case 's': {
-                    buf_s = va_arg(li, char *);
-                    char *temp_s = insertString(s, buf_s, i);
-                    s = _str_cpy(s, temp_s);
+                    char *buf_s = va_arg(li, char *);
+                    tmp = realloc(tmp, sizeof(char) * (str_length(tmp) + str_length(buf_s)));
+                    tmp = _str_cpy(tmp, insertString(tmp, buf_s, i));
                     break;
                     }
                 case 'd': {
-                    buf_i = va_arg(li, int);
-                    char *temp_i = insertString(s, mapIntToString(buf_i), i);
-                    s = _str_cpy(s, temp_i);
+                    int buf_i = va_arg(li, int);
+                    char *i_str = mapIntToString(buf_i);
+                    tmp = realloc(tmp, sizeof(char) * (str_length(tmp) + str_length(i_str)));
+                    tmp = _str_cpy(tmp, insertString(tmp, i_str, i));
                     break;
                     }
                 case '%': {
-                    char *temp_symb = insertString(s, "%", i);
-                    s = _str_cpy(s, temp_symb);
+                    char *sym = "%";
+                    tmp = realloc(tmp, (str_length(tmp) * sizeof(char)));
+                    tmp = _str_cpy(tmp, insertString(tmp, sym, i));
                     break;
                     }
             }

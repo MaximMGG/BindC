@@ -1,6 +1,18 @@
 #include "../headers/util.h"
+#include "../headers/my_string.h"
 
 
+
+int compare_string(char *one, char *two)  {
+    unsigned int one_length = str_length(one);
+    unsigned int two_length = str_length(two);
+
+    if (one_length != two_length) return 0;
+    else 
+        for(int i = 0; i < one_length; i++) 
+            if (one[i] != two[i]) return 0;
+    return 1;
+}
 
 
 Bind** create_user_bind(User *u) {
@@ -199,9 +211,8 @@ char ** parsUserEnter(char *user_enter, int length) {
 
 
 
-//TODO(Maxim) not work yet
 void showTranslation(const char *variable) {
     char *tr_link = str_format(PATH_TO_TRANSLATOR, variable);
-    char *fox = str_format("firefox %s", tr_link);
-    system(fox);
+    char *chrome = str_format("google-chrome %s", tr_link);
+    system(chrome);
 }

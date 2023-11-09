@@ -23,6 +23,12 @@ void * str_cpy(str *to, str *from);
 char * str_format(char *s, ...);
 void str_distroy(str *s);
 int str_cmp(str *one, str *two);
+unsigned int str_length(char *);
+/*
+ *Concatinate two string with symbol between them
+ *return new char *
+*/
+str * str_concat(str *first, str *second, char symbol);
 
 int ** getPacOfDicimal();
 char * mapIntToString(int buf);
