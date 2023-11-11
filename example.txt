@@ -1,0 +1,18 @@
+<PathToDir>
+    <path>%s</path>
+</PathToDir>
+<Bind>
+    <ParentBind>
+    <name>%s</name>
+    <value>%s</name>
+    <ChildBinds>
+        <ChildBind>
+        <name>%s</name>
+        <value>%s</name>
+        </ChildBind>
+        <ChildBind>
+        <name>%s</name>
+        <value>%s</name>
+        </ChildBind>
+    </ChildBind>
+</Bind>

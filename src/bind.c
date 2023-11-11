@@ -68,9 +68,9 @@ void ShowHelp() {
 
 
 
-//TODO (Maxim) need to add fuctional for adding dictianary and binds
 void InitUser() {
     List *list = ReadAllLineFromConfig();
-    User u;
+    User *u = malloc(sizeof(*u));
+    u->dir = get_str_between(list->line[0], '>', '<');
 }
 

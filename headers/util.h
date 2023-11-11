@@ -40,6 +40,7 @@ typedef struct {
 
 // Binds func
 Bind** create_user_bind(User *u);
+Bind** set_binds_from_config(List *config, User *u);
 Bind * add_bind(User *u, char *name, char *value);
 ChildBind * add_child_bind(User *u, char *parent_name, char *name, char *value);
 int delete_bind(User *u, char *name);
@@ -56,6 +57,8 @@ List *CreateUserConfig();
 //Flag realisation funcs
 
 void showTranslation(const char *);
+// for flag "f s"
+int setCurrentFile(char *file_name);
 
 
 //End of flag realisation funcs

@@ -18,7 +18,7 @@ int compare_string(char *one, char *two)  {
 Bind** create_user_bind(User *u) {
     if (u->binds == NULL) {
         u->binds_length = 10;
-        u->binds = malloc(sizeof(Bind) * u->binds_length);
+        u->binds = malloc(sizeof(Bind **));
     } else {
         return u->binds;
     }
@@ -27,7 +27,7 @@ Bind** create_user_bind(User *u) {
 
 
 Bind * add_bind(User *u, char *name, char *value) {
-    u->binds[u->binds_count] = malloc(sizeof(Bind));
+    u->binds[u->binds_count] = malloc(sizeof(Bind *));
     u->binds[u->binds_count]->name = name;
     u->binds[u->binds_count]->value = value;
     u->binds[u->binds_count]->child = NULL;
@@ -35,7 +35,7 @@ Bind * add_bind(User *u, char *name, char *value) {
 
     if (u->binds_count == 10) {
         u->binds_length *= 2;
-        u->binds = realloc(u->binds, sizeof(Bind) * u->binds_length);
+        u->binds = realloc(u->binds, sizeof(Bind *) * u->binds_length);
     }
     return u->binds[u->binds_count - 1];
 }
@@ -49,18 +49,25 @@ ChildBind * add_child_bind(User *u, char *parent_name, char *name, char *value) 
             if (tmp->child == NULL) {
                 tmp->children_length = 10;
                 tmp->children_count = 0;
-                tmp->child = malloc(sizeof(ChildBind) * tmp->children_length);
-                tmp->child[0] = malloc(sizeof(ChildBind));
+                tmp->child = malloc(sizeof(ChildBind *) * tmp->children_length);
+                tmp->child[0] = malloc(sizeof(ChildBind *));
                 tmp->child[0]->name = name;
                 tmp->child[0]->value = value;
+                tmp->children_count++;
             } else {
-                tmp->child[tmp->children_count] = malloc(sizeof(ChildBind));
+                tmp->child[tmp->children_count] = malloc(sizeof(ChildBind *));
                 tmp->child[tmp->children_count]->name = name;
                 tmp->child[tmp->children_count]->value = value;
+                tmp->children_count++;
+            }
+
+            if (tmp->children_count >= 10) {
+                tmp->children_length <<= 1;
+                tmp->child = realloc(tmp->child, sizeof(Bind *) * tmp->children_length);
             }
         }
     }
-    return 0;
+    return NULL;
 }
 
 
@@ -209,8 +216,10 @@ char ** parsUserEnter(char *user_enter, int length) {
     return parsed_enter;
 }
 
+//TODO(Maxim) write this func
 char **getAllFilesFromDir() {
 
+    return NULL;
 }
 
 void showTranslation(const char *variable) {
@@ -228,6 +237,33 @@ int setCurrentFile(char *file_name) {
 
 
 
+Bind** set_binds_from_config(List *config, User *u) {
+
+    Bind **u_b = create_user_bind(u);
+
+    for(int i = 0; i < config->length; i++) {
+
+        if (strcmp(config->line[i], "<ParentBind>")) {
+            i++;
+            char *bname = get_str_between(config->line[i++], '>', '<');
+            char *bvalue = get_str_between(config->line[i++], '>', '<');
+            add_bind(u, bname, bvalue);
+
+            for(int j = i; j < config->length; j++) {
+                if (strcmp(config->line[j], "<ChildBind>")) {
+                    j++;
+                    char *bcname = get_str_between(config->line[j++], '>', '<');
+                    char *bcvalue = get_str_between(config->line[j++], '>', '<');
+                    add_child_bind(u, bname, bcname, bcvalue);
+
+                }
+            }
+        }
+
+    }
+
+    return NULL;
+}
 
 
 
