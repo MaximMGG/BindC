@@ -4,7 +4,7 @@ unsigned int str_length(char *buf) {
     unsigned int length = 0;
     for(int i = 0; ; i++) {
         if (buf[i] == '\0') {
-            length = i;
+            length = i + 1;
             break;
         }
     }
@@ -68,13 +68,11 @@ str * str_concat(str *first, str *second, char symbol) {
  * return 1 if one and two strings are the same
 */
 int str_cmp(str *one, str *two) {
-    unsigned int one_length = str_length(one->str);
-    unsigned int two_length = str_length(two->str);
 
-    if (one_length != two_length) {
+    if (one->length != two->length) {
         return 0;
     } else {
-        for(int i = 0; i < one_length; i++) {
+        for(int i = 0; i < one->length; i++) {
             if (one->str[i] != two->str[i]) {
                 return 0;
             }
@@ -113,45 +111,58 @@ char * mapIntToString(int buf) {
     return s;
 }
 
-char * str_set(char *s) {
-    char *buf = malloc(sizeof(char) * str_length(s));
-    for(int i = 0; ; i++) {
-        if (s[i] == '\0') {
-            buf[i] = '\0';
-            break;
-        }
-        buf[i] = s[i];
-    }
-    return buf;
-}
-
 str *cr_str(char *s) {
-    str *p_s = malloc(sizeof(char) * str_length(s));
-    p_s->str = str_set(s);
-    p_s->length = str_length(s);
+    str *p_s = malloc(sizeof(*p_s));
+    unsigned int len = str_length(s);
+    p_s->str = malloc(sizeof(char) * len);
+
+    for(int i = 0; i < len; i++) {
+        p_s->str[i] = s[i];
+    }
+
+    p_s->str[len] = '\0';
+    p_s->length = len;
     return p_s;
 }
 
-void * str_cpy(str *to, str *from) {
-    to->str = realloc(to, sizeof(char) * (str_length(from->str)));
-    if (to->str == NULL) {
-        return NULL;
+void * str_mem_cpy(str *to, str *from, char *old_string, unsigned int size) {
+
+    unsigned int *iTo;
+    unsigned int *iFrom;
+    
+    if (old_string == NULL) {
+        to->str = realloc(to->str, sizeof(char) * from->length);
+        to->length = from->length;
+        iTo = (unsigned int *)to->str;
+        iFrom = (unsigned int *)from->str;
+    } else {
+        unsigned int old_len = str_length(old_string);
+        to->str = realloc(to->str, sizeof(char) * old_len);
+        to->length = old_len;
+        iTo = (unsigned int *)to->str;
+        iFrom = (unsigned int *)old_string;
+    }
+    int val = size / sizeof(int);
+    int lastVal = size % sizeof(int);
+
+    for(int i = 0; i < val; i++) {
+        *(iTo++) = *(iFrom++);
     }
 
-    int length = 0;
+    unsigned char *cTo = (unsigned char *) iTo;
+    unsigned char *cFrom = (unsigned char *) iFrom;
 
-    for(int i = 0; ; i++){
-        if ((from->str[i] = '\0')) {
-            to->str[i] = '\0';
-            to->length = i;
-            break;
-        }
+    for(int i = 0; i < lastVal; i++) {
+        *(cTo++) = *(cFrom++);
     }
-    to->length = length;
+
     return to;
 }
 
+
 char * _str_cpy(char *target, char *buf) {
+    target = malloc(sizeof(char) * str_length(buf));
+
     for(int i = 0; ; i++) {
         if (buf[i] == '\0') {
             target[i] = '\0';
@@ -163,68 +174,63 @@ char * _str_cpy(char *target, char *buf) {
 }
 
 
-char * insertString(char *s, char *tmp, int pos){
-    long a = sizeof(char) * (str_length(s));
-    long b = sizeof(char) * (str_length(tmp));
-    char *buf = malloc(a + b);
-    int index;
-
-    for(index = 0; index < pos; index++){
-        buf[index] = s[index];
+str * insertString(str *main, char *buf, int pos){
+    char *tmp = malloc(sizeof(char) * (main->length + str_length(buf)));
+    int i = 0;
+    for(; i < pos; i++) {
+        tmp[i] = main->str[i];
     }
-    
-    for(int i = 0; tmp[i] != '\0'; i++, index++){
-        buf[index] = tmp[i];
+    for(int j = 0; ; j++, i++) {
+        if (buf[j] == '\0') break;
+        tmp[i] = buf[j];
     }
-
-    for(int i = pos + 2; ; i++, index++){
-        if (s[i] == '\0') {
-            buf[index] = '\0';
+    pos += 2;
+    if (pos >= main->length) {
+        int len = str_length(tmp);
+        main = (str *) str_mem_cpy(main, NULL, tmp, len);
+        free(tmp);
+        return main;
+    }
+    for(int j = pos; ; i++, j++) {
+        if (main->str[j] == '\0' || main->str[j] == '\n') {
+            tmp[i] = '\0';
             break;
         }
-        buf[index] = s[i];
+        tmp[i] = main->str[j];
     }
-    char * tt = malloc(sizeof(char) * str_length(buf));
-    tt = _str_cpy(tt, buf);
-    free(buf);
-    return tt;
+    int len = str_length(tmp);
+    main = (str *) str_mem_cpy(main, NULL, tmp, len);
+    free(tmp);
+    return main;
 }
 
 
-char * str_format(char *s,...) {
+str * str_format(str *main,...) {
     va_list li;
-    va_start(li, s);
-    char *tmp = malloc(sizeof(char) * str_length(s));
-    tmp = _str_cpy(tmp, s);
+    va_start(li, main);
 
-    for(int i = 0; s[i] != '\0'; i++){
-        if (s[i] == '%') {
-            switch(s[i + 1]) {
+    for(int i = 0; i < main->length; i++) {
+        if (main->str[i] == '%') {
+            switch(main->str[i + 1]) {
                 case 's': {
                     char *buf_s = va_arg(li, char *);
-                    tmp = realloc(tmp, sizeof(char) * (str_length(tmp) + str_length(buf_s)));
-                    tmp = _str_cpy(tmp, insertString(tmp, buf_s, i));
+                    main = insertString(main, buf_s, i);
                     break;
-                    }
+                }
+                case '%': {
+                    main = insertString(main, "%", i); 
+                    break;
+                }
                 case 'd': {
                     int buf_i = va_arg(li, int);
-                    char *i_str = mapIntToString(buf_i);
-                    tmp = realloc(tmp, sizeof(char) * (str_length(tmp) + str_length(i_str)));
-                    tmp = _str_cpy(tmp, insertString(tmp, i_str, i));
+                    main = insertString(main, mapIntToString(buf_i), i);
                     break;
-                    }
-                case '%': {
-                    char *sym = "%";
-                    tmp = realloc(tmp, (str_length(tmp) * sizeof(char)));
-                    tmp = _str_cpy(tmp, insertString(tmp, sym, i));
-                    break;
-                    }
+                }
             }
         }
-
     }
     va_end(li);
-    return s;
+    return main;
 }
 
 void str_distroy(str *s) {

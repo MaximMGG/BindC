@@ -212,7 +212,10 @@ char ** parsUserEnter(char *user_enter, int length) {
 
 
 void showTranslation(const char *variable) {
-    char *tr_link = str_format(PATH_TO_TRANSLATOR, variable);
-    char *chrome = str_format("google-chrome %s", tr_link);
-    system(chrome);
+    str *path = cr_str(PATH_TO_TRANSLATOR);
+    path = str_format(path, variable);
+    path = str_format(cr_str("google-chrome %s"), path->str); 
+    //char *tr_link = str_format(PATH_TO_TRANSLATOR, variable);
+    //char *chrome = str_format("google-chrome %s", tr_link);
+    system(path->str);
 }
