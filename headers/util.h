@@ -8,7 +8,7 @@
 #include "my_string.h"
 
 #define PATH_TO_CONFIG "resources/config.xml"
-#define PATH_TO_TRANSLATOR "https://translate.google.com/?hl=ru&sl=en&tl=ru&text=%s%%0A&op=translate"
+#define PATH_TO_TRANSLATOR "\"https://translate.google.com/?hl=ru&sl=en&tl=ru&text=%s%%0A&op=translate\""
 
 
 typedef struct {

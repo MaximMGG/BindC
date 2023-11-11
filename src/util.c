@@ -9,7 +9,7 @@ int compare_string(char *one, char *two)  {
 
     if (one_length != two_length) return 0;
     else 
-        for(int i = 0; i < one_length; i++) 
+        for(int i = 0; i < one_length - 1; i++) 
             if (one[i] != two[i]) return 0;
     return 1;
 }
@@ -209,7 +209,9 @@ char ** parsUserEnter(char *user_enter, int length) {
     return parsed_enter;
 }
 
+char **getAllFilesFromDir() {
 
+}
 
 void showTranslation(const char *variable) {
     str *path = cr_str(PATH_TO_TRANSLATOR);
@@ -219,3 +221,13 @@ void showTranslation(const char *variable) {
     //char *chrome = str_format("google-chrome %s", tr_link);
     system(path->str);
 }
+
+int setCurrentFile(char *file_name) {
+
+}
+
+
+
+
+
+

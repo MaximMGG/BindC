@@ -131,13 +131,13 @@ void * str_mem_cpy(str *to, str *from, char *old_string, unsigned int size) {
     unsigned int *iFrom;
     
     if (old_string == NULL) {
-        to->str = realloc(to->str, sizeof(char) * from->length);
+        to = realloc(to, sizeof(char) * from->length);
         to->length = from->length;
         iTo = (unsigned int *)to->str;
         iFrom = (unsigned int *)from->str;
     } else {
         unsigned int old_len = str_length(old_string);
-        to->str = realloc(to->str, sizeof(char) * old_len);
+        to = realloc(to, sizeof(char) * old_len);
         to->length = old_len;
         iTo = (unsigned int *)to->str;
         iFrom = (unsigned int *)old_string;
@@ -175,7 +175,7 @@ char * _str_cpy(char *target, char *buf) {
 
 
 str * insertString(str *main, char *buf, int pos){
-    char *tmp = malloc(sizeof(char) * (main->length + str_length(buf)));
+    char *tmp = malloc(sizeof(char) * (main->length * str_length(buf)));
     int i = 0;
     for(; i < pos; i++) {
         tmp[i] = main->str[i];
@@ -235,5 +235,31 @@ str * str_format(str *main,...) {
 
 void str_distroy(str *s) {
     free(s);
+}
+
+
+
+char * get_str_between(char *target, char from_symbol, char to_symbol) {
+
+    int from = 0; 
+    int to = 0;
+
+    for(int i = 0; ; i++) {
+        if (target[i] == from_symbol && from == 0) {
+            from = i + 1;
+            continue;
+        }
+        if (target[i] == to_symbol && to == 0 && from != 0) {
+            to = i + 1;
+            break;
+        }
+    }
+    
+    char *result = malloc(sizeof(char) * (to - from + 1));
+
+    for(int i = from, j = 0; i < to - 1; i++, j++) {
+       result[j] = target[i]; 
+    }
+    return result;
 }
 

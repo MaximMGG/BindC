@@ -1,7 +1,6 @@
 #include "../headers/util.h"
 
 
-
 void ShowHelp();
 void InitUser();
 
@@ -29,8 +28,13 @@ int main() {
                 }
             case 'a':
                 break;
-            case 'f':
-                break;
+            case 'f': {
+                switch(user_command[1][0]) {
+                    case 's':{
+                                 setCurrentFile(user_command[2]);
+                             }
+                }
+            }
             case 'b':
                 break;
             case 'c':
@@ -67,5 +71,6 @@ void ShowHelp() {
 //TODO (Maxim) need to add fuctional for adding dictianary and binds
 void InitUser() {
     List *list = ReadAllLineFromConfig();
+    User u;
 }
 
