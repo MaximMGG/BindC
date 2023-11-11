@@ -216,10 +216,44 @@ char ** parsUserEnter(char *user_enter, int length) {
     return parsed_enter;
 }
 
-//TODO(Maxim) write this func
-char **getAllFilesFromDir() {
+List *list_create() {
+    List *new = (List *) malloc(sizeof(*new));
+    
+    new->line = (char **) malloc(sizeof(char *) * 10);
+    new->length = 10;
+    new->count = 0;
 
-    return NULL;
+    return new;
+}
+
+List *add(char *val, List *cur) {
+    int len = str_length(val);
+    cur->line[cur->count] = (char *) malloc(sizeof(char) * len);
+    _str_mem_cpy(cur->line[cur->count], val, len);
+    cur->count++;
+
+    if (cur->count >= cur->length) {
+        cur->length <<= 1;
+        cur->line = realloc(cur->line, sizeof(char *) * cur->length);
+    }
+    return cur;
+}
+
+List *getAllFilesFromDir(User *u) {
+    DIR *dir = opendir(u->dir);
+    struct dirent *di;
+    List *dirContent = list_create();
+
+    if (dir) {
+        while((di = readdir(dir)) != NULL) {
+            dirContent = add(di->d_name, dirContent);
+        }
+    } else {
+        fprintf(stderr, "ERROR: file dir name %s doesn't exitst", u->dir);
+    }
+
+    closedir(dir);
+    return dirContent;
 }
 
 void showTranslation(const char *variable) {
@@ -231,8 +265,9 @@ void showTranslation(const char *variable) {
     system(path->str);
 }
 
-int setCurrentFile(char *file_name) {
-
+int setCurrentFile(char *file_name, User *u) {
+    List *file_in_dir = getAllFilesFromDir(u);
+    return 0;
 }
 
 
@@ -240,6 +275,7 @@ int setCurrentFile(char *file_name) {
 Bind** set_binds_from_config(List *config, User *u) {
 
     Bind **u_b = create_user_bind(u);
+    u->binds = u_b;
 
     for(int i = 0; i < config->length; i++) {
 
@@ -255,14 +291,15 @@ Bind** set_binds_from_config(List *config, User *u) {
                     char *bcname = get_str_between(config->line[j++], '>', '<');
                     char *bcvalue = get_str_between(config->line[j++], '>', '<');
                     add_child_bind(u, bname, bcname, bcvalue);
-
+                }
+                if (strcmp(config->line[j], "</ChildBinds>")) {
+                    break;
                 }
             }
         }
 
     }
-
-    return NULL;
+    return u_b;
 }
 
 

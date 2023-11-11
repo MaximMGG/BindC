@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "my_string.h"
+#include <dirent.h>
 
 #define PATH_TO_CONFIG "resources/config.xml"
 #define PATH_TO_TRANSLATOR "\"https://translate.google.com/?hl=ru&sl=en&tl=ru&text=%s%%0A&op=translate\""
@@ -14,6 +15,7 @@
 typedef struct {
     char **line;
     int length;
+    unsigned int count;
 } List;
 
 typedef struct {
@@ -51,6 +53,7 @@ int delete_child_bind(User *u, char *parent_name, char *name);
 
 List *ReadAllLineFromConfig();
 List *CreateUserConfig();
+List *add(char *val, List *cur);
 
 //End List func
 
@@ -58,7 +61,7 @@ List *CreateUserConfig();
 
 void showTranslation(const char *);
 // for flag "f s"
-int setCurrentFile(char *file_name);
+int setCurrentFile(char *file_name, User *u);
 
 
 //End of flag realisation funcs

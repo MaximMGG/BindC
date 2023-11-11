@@ -72,5 +72,6 @@ void InitUser() {
     List *list = ReadAllLineFromConfig();
     User *u = malloc(sizeof(*u));
     u->dir = get_str_between(list->line[0], '>', '<');
+    set_binds_from_config(list, u);
 }
 

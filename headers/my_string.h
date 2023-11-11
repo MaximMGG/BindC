@@ -34,6 +34,7 @@ unsigned int str_length(char *);
 */
 
 void * str_mem_cpy(str *to, str *from, char *old_string, unsigned int size);
+void * _str_mem_cpy(char *to, char *from, unsigned int size);
 /*
  * return string from target surraunded to symbols: from_symbol and to_symbol
  * f.e. <path>/usr/home/code/test.c</path> -> /usr/home/code/test.c
