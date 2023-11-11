@@ -2,37 +2,44 @@
 
 
 void ShowHelp();
-void InitUser();
+User * InitUser();
+int mapUserCommand(char **);
 
 int main() {
 
     // puts("Hello let's start or enter help for show some referencies");
-    InitUser();
+    User *u = InitUser();
    
     char *user_enter;
     fgets(user_enter, 100, stdin);
 
     while(!(compare_string(user_enter, "exit"))) {
 
-        char **user_command = parsUserEnter(user_enter, strlen(user_enter));
+        List *user_command = parsUserEnter(user_enter, strlen(user_enter));
 
         if (compare_string(user_enter, "show")) {
             ShowHelp();
         }
+        char b = 2;
 
         //TODO (Maxim) think about switch statement for user_command array
-        switch (user_command[0][0]) {
+        switch (user_command->line[0][0]) {
             case 't': {
-                    showTranslation(user_command[1]); 
+                    showTranslation(user_command->line[1]); 
                     break;
                 }
             case 'a':
                 break;
             case 'f': {
-                switch(user_command[1][0]) {
+                switch(mapUserCommand(user_command)) {
                     case 's':{
-                                 setCurrentFile(user_command[2]);
+                                 setCurrentFile(user_command[2], u);
+                                 break;
                              }
+
+                    case : {
+
+}
                 }
             }
             case 'b':
@@ -68,10 +75,15 @@ void ShowHelp() {
 
 
 
-void InitUser() {
+User * InitUser() {
     List *list = ReadAllLineFromConfig();
     User *u = malloc(sizeof(*u));
     u->dir = get_str_between(list->line[0], '>', '<');
     set_binds_from_config(list, u);
+    return u;
+}
+
+
+int mapUserCommand(char **user_command) {
 }
 

@@ -75,7 +75,7 @@ int delete_bind(User *u, char *name) {
     int res = 1;
     for(int i = 0; i < u->binds_count; i++){
 
-        if (strcmp(u->binds[i]->name, name)) {
+        if (!strcmp(u->binds[i]->name, name)) {
             free(u->binds[i]);
             res = 0;
             if (i == u->binds_count - 1) {
@@ -192,19 +192,16 @@ List * ReadAllLineFromConfig() {
 //list func end
 
 
-char ** parsUserEnter(char *user_enter, int length) {
+List * parsUserEnter(char *user_enter, int length) {
 
-    char **parsed_enter = malloc(sizeof(char *) * 10);
-    int command = 0;
+    List *list = list_create();
 
     char *buffer = malloc(sizeof(char) * 100);
 
     for(int i = 0, j = 0; i < length; i++, j++){
         if (user_enter[i] == ' ' || user_enter[i] == '\0' || user_enter[i] == '\n') {
             buffer[j] = '\0';
-            parsed_enter[command] = malloc(sizeof(*buffer));
-            strcpy(parsed_enter[command], buffer);
-            command++;
+            list = add(buffer, list);
             j = -1;
         } else {
             buffer[j] = user_enter[i];
@@ -213,7 +210,7 @@ char ** parsUserEnter(char *user_enter, int length) {
 
     free(buffer);
 
-    return parsed_enter;
+    return list;
 }
 
 List *list_create() {
@@ -256,6 +253,14 @@ List *getAllFilesFromDir(User *u) {
     return dirContent;
 }
 
+void showAllFilesInDir(User *u) {
+    List *list = getAllFilesFromDir(u);
+    for(int i = 0; i < list->count; i++) {
+        printf("%s\n", list->line[i]);
+    }
+    free(list);
+}
+
 void showTranslation(const char *variable) {
     str *path = cr_str(PATH_TO_TRANSLATOR);
     path = str_format(path, variable);
@@ -267,6 +272,14 @@ void showTranslation(const char *variable) {
 
 int setCurrentFile(char *file_name, User *u) {
     List *file_in_dir = getAllFilesFromDir(u);
+    for(int i = 0; i < file_in_dir->count; i++) {
+        if (strcmp(file_name, file_in_dir->line[i])) {
+            u->cur_file = file_name;
+            free(file_in_dir);
+            return 1;
+        }
+    }
+    free(file_in_dir);
     return 0;
 }
 

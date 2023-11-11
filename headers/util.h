@@ -34,6 +34,7 @@ typedef struct Bind {
 
 typedef struct {
     char *dir;
+    char *cur_file;
     Bind **binds;
     int binds_count;
     int binds_length;
@@ -62,12 +63,15 @@ List *add(char *val, List *cur);
 void showTranslation(const char *);
 // for flag "f s"
 int setCurrentFile(char *file_name, User *u);
+//for flag f show
+void showAllFilesInDir(User *u);
 
 
 //End of flag realisation funcs
 
 
-char ** parsUserEnter(char *user_enter, int length);
+List * parsUserEnter(char *user_enter, int length);
+List * list_create();
 
 
 //utility func
