@@ -65,7 +65,12 @@ void showTranslation(const char *);
 int setCurrentFile(char *file_name, User *u);
 //for flag f show
 void showAllFilesInDir(User *u);
+//crete the new file in user dir
+void createNewFile(User *u, char *name);
 
+//set in User *u path to dir with files
+void setUserDir(User *u, char *full_path);
+void appentWord(char *word);
 
 //End of flag realisation funcs
 

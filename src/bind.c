@@ -24,28 +24,40 @@ int main() {
 
         //TODO (Maxim) think about switch statement for user_command array
         switch (user_command->line[0][0]) {
-            case 't': {
-                    showTranslation(user_command->line[1]); 
-                    break;
-                }
-            case 'a':
-                break;
-            case 'f': {
-                switch(mapUserCommand(user_command)) {
-                    case 's':{
-                                 setCurrentFile(user_command[2], u);
-                                 break;
-                             }
+            case 't' : {
+                        showTranslation(user_command->line[1]);
+                        break;
+                       }
+            case 'a' : {
+                        //appentWord(user_command->line[1]);
+                       }
+            case 'f' : {
+                        switch(user_command->line[1][0]) {
+                            case 's' : {
+                                if(!setCurrentFile(user_command->line[2], u)) {
+                                    fprintf(stderr, "ERROR: You don't have file %s\n", user_command->line[2]);
+                                    break;
+                                }
+                                       }
+                            case 'c' : {
+                                createNewFile(u, user_command->line[2]);
+                                break;
+                                       }
+                            case 'd' : {
+                                setUserDir(u, user_command->line[2]);
+                                       }
+                            if (!strcmp(user_command->line[1], "show")) {
+                                showAllFilesInDir(u);
+                                break;
+                            }
+                        }
+                       }
+            case 'b' : {
 
-                    case : {
+                       }
+            case 'c' : {
 
-}
-                }
-            }
-            case 'b':
-                break;
-            case 'c':
-                break;
+                       }
         }
       
 
@@ -83,7 +95,4 @@ User * InitUser() {
     return u;
 }
 
-
-int mapUserCommand(char **user_command) {
-}
 

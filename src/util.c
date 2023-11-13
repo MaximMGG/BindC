@@ -273,7 +273,7 @@ void showTranslation(const char *variable) {
 int setCurrentFile(char *file_name, User *u) {
     List *file_in_dir = getAllFilesFromDir(u);
     for(int i = 0; i < file_in_dir->count; i++) {
-        if (strcmp(file_name, file_in_dir->line[i])) {
+        if (!strcmp(file_name, file_in_dir->line[i])) {
             u->cur_file = file_name;
             free(file_in_dir);
             return 1;
@@ -283,6 +283,33 @@ int setCurrentFile(char *file_name, User *u) {
     return 0;
 }
 
+void setUserDir(User *u, char *full_path) {
+    DIR *dir = opendir(full_path);
+    if (dir == NULL) {
+       fprintf(stderr, "Incorrect path to dir -> %s, try to write agane full path to your dir\n", full_path);
+    } else {
+        u->dir = full_path;
+    }
+    closedir(dir);
+}
+
+
+
+void appentWord(char *word) {
+
+}
+
+void createNewFile(User *u, char *name) {
+    str *file_name = cr_str(name);
+    str *path_to_file = cr_str(u->dir);
+    path_to_file = str_concat(path_to_file, file_name, 0);
+    FILE *f = fopen(path_to_file->str, "w");
+
+    str_distroy(file_name);
+    str_distroy(path_to_file);
+
+    fclose(f);
+}
 
 
 Bind** set_binds_from_config(List *config, User *u) {
