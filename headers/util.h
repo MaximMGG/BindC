@@ -48,6 +48,10 @@ Bind * add_bind(User *u, char *name, char *value);
 ChildBind * add_child_bind(User *u, char *parent_name, char *name, char *value);
 int delete_bind(User *u, char *name);
 int delete_child_bind(User *u, char *parent_name, char *name);
+//prepare List for writting info in user config.xml
+List * prepare_user_config(User *u);
+//write user config in config.xml
+void write_user_config(User *u);
 //End binds bunc
 
 // List func
@@ -70,7 +74,8 @@ void createNewFile(User *u, char *name);
 
 //set in User *u path to dir with files
 void setUserDir(User *u, char *full_path);
-void appentWord(char *word);
+//appent word with translation in current file
+void appentWord(User *u, char *word);
 
 //End of flag realisation funcs
 

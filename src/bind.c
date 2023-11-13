@@ -29,7 +29,7 @@ int main() {
                         break;
                        }
             case 'a' : {
-                        //appentWord(user_command->line[1]);
+                        appentWord(u, user_command->line[1]);
                        }
             case 'f' : {
                         switch(user_command->line[1][0]) {

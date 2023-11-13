@@ -295,8 +295,12 @@ void setUserDir(User *u, char *full_path) {
 
 
 
-void appentWord(char *word) {
+void appentWord(User *u, char *word) {
+    FILE *f = fopen(u->cur_file, "a");
 
+    fputs(word, f);
+
+    fclose(f);
 }
 
 void createNewFile(User *u, char *name) {
@@ -342,5 +346,48 @@ Bind** set_binds_from_config(List *config, User *u) {
     return u_b;
 }
 
+void write_user_config(User *u) {
+    List *conf = prepare_user_config(u);
+    FILE *f = fopen(PATH_TO_CONFIG, "w");
+
+    for(int i = 0; i < conf->count; i++) {
+        fputs(conf->line[i], f);
+    }
+
+    fclose(f);
+    free(conf);
+}
+
+List * prepare_user_config(User *u) {
+    List *conf = list_create();
+    
+    add(cr_str("<PathToDir>")->str, conf);
+    add(str_format(cr_str("\t<path>%s</path>"), u->dir)->str, conf);
+    add(cr_str("</PathToDir>")->str, conf);
+    
+    add(cr_str("<Bind>")->str, conf);
+
+    for(int i = 0; i < u->binds_count; i++) {
+        add(cr_str("\t<ParentBind>")->str, conf);
+        add(str_format(cr_str("\t\t<name>%s</name>"), u->binds[i]->name)->str, conf);
+        add(str_format(cr_str("\t\t<value>%s</value>"), u->binds[i]->value)->str, conf);
+        add(cr_str("\t\t<ChildBinds>")->str, conf);
+
+        for(int j = 0; j < u->binds[i]->children_count; j++) {
+            add(cr_str("\t\t\t<ChildBind>")->str, conf);
+            add(str_format(cr_str("\t\t\t\t<name>%s</name>"), u->binds[i]->child[j]->name)->str, conf);
+            add(str_format(cr_str("\t\t\t\t<name>%s</name>"), u->binds[i]->child[j]->value)->str, conf);
+            add(cr_str("\t\t\t</ChildBind>")->str, conf);
+        }
+
+        add(cr_str("\t\t</ChildBinds>")->str, conf);
+        add(cr_str("\t</ParentBind>")->str, conf);
+    }
+
+    add(cr_str("</Bind>")->str, conf);
+    
+
+    return conf;
+}
 
 
