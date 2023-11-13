@@ -29,6 +29,10 @@ int main() {
                         break;
                        }
             case 'a' : {
+                        if (u->cur_file == NULL) {
+                            puts("Please set current file -> f s file_name");
+                            break;
+                        }
                         appentWord(u, user_command->line[1]);
                         break;
                        }

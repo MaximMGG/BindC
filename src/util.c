@@ -194,6 +194,16 @@ List * parsUserEnter(char *user_enter, int length) {
 
     char *buffer = malloc(sizeof(char) * 100);
 
+    if (user_enter[0] == 'a') {
+        list = add("a", list);
+        for(int i = 2, j = 0; i < length; i++, j++) {
+            buffer[j] = user_enter[i];
+        }
+        list = add(buffer, list);
+        free(buffer);
+        return list;
+    }
+
     for(int i = 0, j = 0; i < length; i++, j++){
         if (user_enter[i] == ' ' || user_enter[i] == '\0' || user_enter[i] == '\n') {
             buffer[j] = '\0';
