@@ -391,3 +391,13 @@ List * prepare_user_config(User *u) {
 }
 
 
+void show_all_bind(User *u) {
+    puts("-----------------------------------------------------");
+    for(int i = 0; i < u->binds_count; i++) {
+        printf("parent bind name -> %s, value -> %s\n", u->binds[i]->name, u->binds[i]->value);
+        for(int j = 0; j < u->binds[i]->children_count; j++) {
+            printf("\tchild bind name -> %s, value -> %s\n", u->binds[i]->child[j]->name, u->binds[i]->child[j]->value);
+        }
+    }
+    puts("-----------------------------------------------------");
+}

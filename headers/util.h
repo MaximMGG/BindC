@@ -52,6 +52,10 @@ int delete_child_bind(User *u, char *parent_name, char *name);
 List * prepare_user_config(User *u);
 //write user config in config.xml
 void write_user_config(User *u);
+//show all binds
+void show_all_bind(User *u);
+
+
 //End binds bunc
 
 // List func

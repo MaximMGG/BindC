@@ -53,7 +53,17 @@ int main() {
                         }
                        }
             case 'b' : {
-
+                if (!strcmp(user_command->line[1], "cp")) {
+                    add_bind(u, user_command->line[2], user_command->line[3]);
+                } else if (!strcmp(user_command->line[1], "cc")) {
+                    add_child_bind(u, user_command->line[2], user_command->line[3], user_command->line[4]);
+                } else if (!strcmp(user_command->line[1], "dp")) {
+                    delete_bind(u, user_command->line[2]);
+                } else if (!strcmp(user_command->line[1], "dc")) {
+                    delete_child_bind(u, user_command->line[2], user_command->line[3]);
+                } else if (!strcmp(user_command->line[1], "show")) {
+                    show_all_bind(u);
+                }
                        }
             case 'c' : {
 
@@ -63,6 +73,11 @@ int main() {
 
         fgets(user_enter, 100, stdin);
     }
+
+    write_user_config(u);
+
+    free(u);
+    free(user_enter);
 
     return 0;
 }
