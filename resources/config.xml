@@ -2,8 +2,4 @@
 	<path>p</path>
 </PathToDir>
 <Bind>
-	<ParentBind>
-		<ChildBinds>
-		</ChildBinds>
-	</ParentBind>
 </Bind>

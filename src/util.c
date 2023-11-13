@@ -43,7 +43,7 @@ Bind * add_bind(User *u, char *name, char *value) {
 
 ChildBind * add_child_bind(User *u, char *parent_name, char *name, char *value) {
     for(int i = 0; i < u->binds_count; i++){
-        if (strcmp(u->binds[i]->name, parent_name)) {
+        if (!strcmp(u->binds[i]->name, parent_name)) {
             Bind *tmp = u->binds[i];
 
             if (tmp->child == NULL) {
@@ -99,10 +99,10 @@ int delete_child_bind(User *u, char *parent_name, char *name) {
     int res = 1;
 
     for(int i = 0; i < u->binds_count; i++){
-        if (strcmp(u->binds[i]->name, parent_name)) {
+        if (!strcmp(u->binds[i]->name, parent_name)) {
             Bind *tmp = u->binds[i];
             for(int j = 0; j < tmp->children_count; j++){
-                if (strcmp(tmp->child[j]->name, name)) {
+                if (!strcmp(tmp->child[j]->name, name)) {
                     free(tmp->child[j]);
                     if (j == tmp->children_count - 1) {
                         tmp->children_count--;
@@ -130,9 +130,9 @@ List *CreateUserConfig() {
     
     List *list = malloc(sizeof(*list));
     
-    list->line = malloc(sizeof(char *) * 10);
+    list->line = malloc(sizeof(char *) * 5);
 
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < 5; i++){
         list->line[i] = malloc(sizeof(char) * 64);
     }
 
@@ -140,17 +140,13 @@ List *CreateUserConfig() {
     strcpy(list->line[1], "\t<path>p</path>\n");
     strcpy(list->line[2], "</PathToDir>\n");
     strcpy(list->line[3], "<Bind>\n");
-    strcpy(list->line[4], "\t<ParentBind>\n");
-    strcpy(list->line[5], "\t\t<ChildBinds>\n");
-    strcpy(list->line[6], "\t\t</ChildBinds>\n");
-    strcpy(list->line[7], "\t</ParentBind>\n");
-    strcpy(list->line[8], "</Bind>\n");
+    strcpy(list->line[4], "</Bind>\n");
 
-    for (int i = 0; i < 9; i++){
+    for (int i = 0; i < 5; i++){
         fputs(list->line[i], f);
     }
 
-    list->length = 9;
+    list->length = 5;
 
     fclose(f);
     return list;
@@ -323,20 +319,20 @@ Bind** set_binds_from_config(List *config, User *u) {
 
     for(int i = 0; i < config->length; i++) {
 
-        if (strcmp(config->line[i], "<ParentBind>")) {
+        if (!strcmp(config->line[i], "\t<ParentBind>\n")) {
             i++;
             char *bname = get_str_between(config->line[i++], '>', '<');
             char *bvalue = get_str_between(config->line[i++], '>', '<');
             add_bind(u, bname, bvalue);
 
             for(int j = i; j < config->length; j++) {
-                if (strcmp(config->line[j], "<ChildBind>")) {
+                if (!strcmp(config->line[j], "\t\t\t<ChildBind>\n")) {
                     j++;
                     char *bcname = get_str_between(config->line[j++], '>', '<');
                     char *bcvalue = get_str_between(config->line[j++], '>', '<');
                     add_child_bind(u, bname, bcname, bcvalue);
                 }
-                if (strcmp(config->line[j], "</ChildBinds>")) {
+                if (!strcmp(config->line[j], "\t\t</ChildBinds>\n")) {
                     break;
                 }
             }

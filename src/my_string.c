@@ -42,9 +42,13 @@ str * str_concat(str *first, str *second, char symbol) {
     
     for( ; ;i++) {
         if (first->str[i] == '\0') {
-            buf[i] = symbol;
-            i++;
-            break;
+            if (symbol == 0) {
+                break;
+            } else {
+                buf[i] = symbol;
+                i++;
+                break;
+            }
         }
         buf[i] = first->str[i];
     }
@@ -125,28 +129,6 @@ str *cr_str(char *s) {
     return p_s;
 }
 
-void * _str_mem_cpy(char *to, char *from, unsigned int size) {
-    unsigned int *iTo = (unsigned int *) to;
-    unsigned int *iFrom = (unsigned int *) from;
-    
-    int val = size / sizeof(int);
-    int lastVal = size % sizeof(int);
-
-    for(int i = 0; i < val; i++) {
-        *(iTo++) = *(iFrom++);
-    }
-
-    unsigned char *cTo = (unsigned char *) iTo;
-    unsigned char *cFrom = (unsigned char *) iFrom;
-
-    for(int i = 0; i < lastVal; i++) {
-        *(cTo++) = *(cFrom++);
-    }
-
-    return to;
-
-}
-
 void * str_mem_cpy(str *to, str *from, char *old_string, unsigned int size) {
 
     unsigned int *iTo;
@@ -181,6 +163,31 @@ void * str_mem_cpy(str *to, str *from, char *old_string, unsigned int size) {
     return to;
 }
 
+void * _str_mem_cpy(char *to, char *from, unsigned int size) {
+
+    unsigned int *iTo;
+    unsigned int *iFrom;
+    
+    to = realloc(to, sizeof(char) * str_length(from));
+    iTo = (unsigned int *)to;
+    iFrom = (unsigned int *)from;
+
+    int val = size / sizeof(int);
+    int lastVal = size % sizeof(int);
+
+    for(int i = 0; i < val; i++) {
+        *(iTo++) = *(iFrom++);
+    }
+
+    unsigned char *cTo = (unsigned char *) iTo;
+    unsigned char *cFrom = (unsigned char *) iFrom;
+
+    for(int i = 0; i < lastVal; i++) {
+        *(cTo++) = *(cFrom++);
+    }
+
+    return to;
+}
 
 char * _str_cpy(char *target, char *buf) {
     target = malloc(sizeof(char) * str_length(buf));
