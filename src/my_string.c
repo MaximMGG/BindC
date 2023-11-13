@@ -135,13 +135,13 @@ void * str_mem_cpy(str *to, str *from, char *old_string, unsigned int size) {
     unsigned int *iFrom;
     
     if (old_string == NULL) {
-        to = realloc(to, sizeof(char) * from->length);
+        to->str = realloc(to->str, sizeof(char) * from->length);
         to->length = from->length;
         iTo = (unsigned int *)to->str;
         iFrom = (unsigned int *)from->str;
     } else {
         unsigned int old_len = str_length(old_string);
-        to = realloc(to, sizeof(char) * old_len);
+        to->str = realloc(to->str, sizeof(char) * old_len);
         to->length = old_len;
         iTo = (unsigned int *)to->str;
         iFrom = (unsigned int *)old_string;

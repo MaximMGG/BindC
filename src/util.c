@@ -302,7 +302,7 @@ void setUserDir(User *u, char *full_path) {
 
 
 void appentWord(User *u, char *word) {
-    FILE *f = fopen(u->cur_file, "a");
+    FILE *f = fopen(str_concat(cr_str(u->dir), cr_str(u->cur_file), 0)->str, "a");
 
     fputs(word, f);
 
@@ -367,30 +367,30 @@ void write_user_config(User *u) {
 List * prepare_user_config(User *u) {
     List *conf = list_create();
     
-    add(cr_str("<PathToDir>")->str, conf);
-    add(str_format(cr_str("\t<path>%s</path>"), u->dir)->str, conf);
-    add(cr_str("</PathToDir>")->str, conf);
+    add(cr_str("<PathToDir>\n")->str, conf);
+    add(str_concat(str_format(cr_str("\t<path>%s</path>"), u->dir), cr_str("\n"), 0)->str, conf);
+    add(cr_str("</PathToDir>\n")->str, conf);
     
-    add(cr_str("<Bind>")->str, conf);
+    add(cr_str("<Bind>\n")->str, conf);
 
     for(int i = 0; i < u->binds_count; i++) {
-        add(cr_str("\t<ParentBind>")->str, conf);
-        add(str_format(cr_str("\t\t<name>%s</name>"), u->binds[i]->name)->str, conf);
-        add(str_format(cr_str("\t\t<value>%s</value>"), u->binds[i]->value)->str, conf);
-        add(cr_str("\t\t<ChildBinds>")->str, conf);
+        add(cr_str("\t<ParentBind>\n")->str, conf);
+        add(str_format(cr_str("\t\t<name>%s</name>\n"), u->binds[i]->name)->str, conf);
+        add(str_format(cr_str("\t\t<value>%s</value>\n"), u->binds[i]->value)->str, conf);
+        add(cr_str("\t\t<ChildBinds>\n")->str, conf);
 
         for(int j = 0; j < u->binds[i]->children_count; j++) {
-            add(cr_str("\t\t\t<ChildBind>")->str, conf);
-            add(str_format(cr_str("\t\t\t\t<name>%s</name>"), u->binds[i]->child[j]->name)->str, conf);
-            add(str_format(cr_str("\t\t\t\t<name>%s</name>"), u->binds[i]->child[j]->value)->str, conf);
-            add(cr_str("\t\t\t</ChildBind>")->str, conf);
+            add(cr_str("\t\t\t<ChildBind>\n")->str, conf);
+            add(str_format(cr_str("\t\t\t\t<name>%s</name>\n"), u->binds[i]->child[j]->name)->str, conf);
+            add(str_format(cr_str("\t\t\t\t<name>%s</name>\n"), u->binds[i]->child[j]->value)->str, conf);
+            add(cr_str("\t\t\t</ChildBind>\n")->str, conf);
         }
 
-        add(cr_str("\t\t</ChildBinds>")->str, conf);
-        add(cr_str("\t</ParentBind>")->str, conf);
+        add(cr_str("\t\t</ChildBinds>\n")->str, conf);
+        add(cr_str("\t</ParentBind>\n")->str, conf);
     }
 
-    add(cr_str("</Bind>")->str, conf);
+    add(cr_str("</Bind>\n")->str, conf);
     
 
     return conf;

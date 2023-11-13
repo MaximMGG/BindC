@@ -41,8 +41,8 @@ int main() {
                             case 's' : {
                                 if(!setCurrentFile(user_command->line[2], u)) {
                                     fprintf(stderr, "ERROR: You don't have file %s\n", user_command->line[2]);
-                                    break;
                                 }
+                                break;
                                        }
                             case 'c' : {
                                 createNewFile(u, user_command->line[2]);
@@ -58,6 +58,7 @@ int main() {
                             }
                         }
                        }
+                       break;
             case 'b' : {
                 if (!strcmp(user_command->line[1], "cp")) {
                     add_bind(u, user_command->line[2], user_command->line[3]);
@@ -112,6 +113,7 @@ User * InitUser() {
     List *list = ReadAllLineFromConfig();
     User *u = malloc(sizeof(*u));
     u->dir = get_str_between(list->line[1], '>', '<');
+    u->binds_count = 0;
     set_binds_from_config(list, u);
     return u;
 }
