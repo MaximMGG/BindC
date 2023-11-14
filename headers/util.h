@@ -9,7 +9,7 @@
 #include <dirent.h>
 
 #define PATH_TO_CONFIG "resources/config.xml"
-#define PATH_TO_TRANSLATOR "\"https://translate.google.com/?hl=ru&sl=en&tl=ru&text=%s%%0A&op=translate\""
+#define PATH_TO_TRANSLATOR "\"https://translate.google.com/?hl=ru&sl=en&tl=ru&text=%s%%0A&op=translate\" &"
 
 
 typedef struct {
@@ -55,8 +55,11 @@ void write_user_config(User *u);
 //show all binds
 void show_all_bind(User *u);
 
+void callParentBind(User *u, char *bind);
+void callChildBind(User *u, char *p_bind, char *c_bind);
 
-//End binds bunc
+
+//End binds func
 
 // List func
 

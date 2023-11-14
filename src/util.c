@@ -407,3 +407,36 @@ void show_all_bind(User *u) {
     }
     puts("-----------------------------------------------------");
 }
+
+
+void callParentBind(User *u, char *bind) {
+    for (int i = 0; i < u->binds_count; i++) {
+        if (!strcmp(u->binds[i]->name, bind)) {
+            str *call = str_concat(cr_str("google-chrome"), cr_str(bind), ' ');
+            call = str_concat(call, cr_str("&"), ' ');
+            return;
+        }
+    }
+    printf("You don't binding with name: %s\n", bind);
+}
+
+void callChildBind(User *u, char *p_bind, char *c_bind) {
+    for (int i = 0; i < u->binds_count; i++) {
+        if (!strcmp(u->binds[i]->name, p_bind)) {
+            ChildBind *cb = u->binds[i]->child[0];
+            for(int j = 0; j < u->binds[i]->children_count; j++) {
+                if(!strcmp(cb->name, c_bind)) {
+                    str *call = str_concat(cr_str("google-chrome"), cr_str(c_bind), ' ');
+                    call = str_concat(call, cr_str("&"), ' ');
+                    return;
+                } else {
+                    cb++;
+                }
+            }
+        printf("You don't binding with name: %s\n", c_bind);
+        break;
+        }
+    }
+}
+
+

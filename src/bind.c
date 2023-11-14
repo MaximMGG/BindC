@@ -9,7 +9,7 @@ int main() {
 
     // puts("Hello let's start or enter help for show some referencies");
     User *u = InitUser();
-   
+
     char *user_enter = malloc(sizeof(char) * 300);
     fgets(user_enter, 300, stdin);
 
@@ -70,6 +70,12 @@ int main() {
                     delete_child_bind(u, user_command->line[2], user_command->line[3]);
                 } else if (!strcmp(user_command->line[1], "show")) {
                     show_all_bind(u);
+                } else {
+                    if (user_command->count == 2) {
+                        callParentBind(u, user_command->line[1]);
+                    } else if (user_command->count == 3) {
+                        callChildBind(u, user_command->line[1], user_command->line[2]);
+                    }
                 }
                        }
             case 'c' : {
