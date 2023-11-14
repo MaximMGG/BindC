@@ -2,4 +2,14 @@
 	<path>/home/maximhrunenko/words/</path>
 </PathToDir>
 <Bind>
+	<ParentBind>
+		<name>git</name>
+		<value>https://github.com/MaximMGG</value>
+		<ChildBinds>
+			<ChildBind>
+				<name>repo</name>
+				<value>https://github.com/MaximMGG?tab=repositories</value>
+			</ChildBind>
+		</ChildBinds>
+	</ParentBind>
 </Bind>

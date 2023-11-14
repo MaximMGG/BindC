@@ -375,14 +375,18 @@ List * prepare_user_config(User *u) {
 
     for(int i = 0; i < u->binds_count; i++) {
         add(cr_str("\t<ParentBind>\n")->str, conf);
-        add(str_format(cr_str("\t\t<name>%s</name>\n"), u->binds[i]->name)->str, conf);
-        add(str_format(cr_str("\t\t<value>%s</value>\n"), u->binds[i]->value)->str, conf);
+        add(str_concat(str_format(cr_str("\t\t<name>%s</name>\n"), u->binds[i]->name), cr_str("\n"), 0)->str, conf);
+        add(str_concat(str_format(cr_str("\t\t<value>%s</value>\n"), u->binds[i]->value), cr_str("\n"), 0)->str, conf);
         add(cr_str("\t\t<ChildBinds>\n")->str, conf);
 
         for(int j = 0; j < u->binds[i]->children_count; j++) {
             add(cr_str("\t\t\t<ChildBind>\n")->str, conf);
-            add(str_format(cr_str("\t\t\t\t<name>%s</name>\n"), u->binds[i]->child[j]->name)->str, conf);
-            add(str_format(cr_str("\t\t\t\t<name>%s</name>\n"), u->binds[i]->child[j]->value)->str, conf);
+            add(str_concat(
+                    str_format(
+                        cr_str("\t\t\t\t<name>%s</name>\n"), u->binds[i]->child[j]->name), cr_str("\n"), 0)->str, conf);
+            add(str_concat(
+                    str_format(
+                        cr_str("\t\t\t\t<value>%s</value>\n"), u->binds[i]->child[j]->value), cr_str("\n"), 0)->str, conf);
             add(cr_str("\t\t\t</ChildBind>\n")->str, conf);
         }
 
@@ -412,8 +416,9 @@ void show_all_bind(User *u) {
 void callParentBind(User *u, char *bind) {
     for (int i = 0; i < u->binds_count; i++) {
         if (!strcmp(u->binds[i]->name, bind)) {
-            str *call = str_concat(cr_str("google-chrome"), cr_str(bind), ' ');
+            str *call = str_concat(cr_str("google-chrome"), cr_str(u->binds[i]->value), ' ');
             call = str_concat(call, cr_str("&"), ' ');
+            system(call->str);
             return;
         }
     }
@@ -426,8 +431,9 @@ void callChildBind(User *u, char *p_bind, char *c_bind) {
             ChildBind *cb = u->binds[i]->child[0];
             for(int j = 0; j < u->binds[i]->children_count; j++) {
                 if(!strcmp(cb->name, c_bind)) {
-                    str *call = str_concat(cr_str("google-chrome"), cr_str(c_bind), ' ');
+                    str *call = str_concat(cr_str("google-chrome"), cr_str(cb->value), ' ');
                     call = str_concat(call, cr_str("&"), ' ');
+                    system(call->str);
                     return;
                 } else {
                     cb++;

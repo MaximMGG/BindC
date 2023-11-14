@@ -279,16 +279,17 @@ char * get_str_between(char *target, char from_symbol, char to_symbol) {
             continue;
         }
         if (target[i] == to_symbol && to == 0 && from != 0) {
-            to = i + 1;
+            to = i;
             break;
         }
     }
     
-    char *result = malloc(sizeof(char) * (to - from + 1));
+    char *result = malloc(sizeof(char) * (to - from) + 1);
 
-    for(int i = from, j = 0; i < to - 1; i++, j++) {
+    for(int i = from, j = 0; i < to; i++, j++) {
        result[j] = target[i]; 
     }
+    result[to - from] = '\0';
     return result;
 }
 
