@@ -1,5 +1,6 @@
 #include "../headers/util.h"
 #include "../headers/my_string.h"
+#include <unistd.h>
 
 
 
@@ -126,7 +127,10 @@ int delete_child_bind(User *u, char *parent_name, char *name) {
 //list func
 
 List *CreateUserConfig() {
-    FILE *f = fopen(PATH_TO_CONFIG, "w");
+    system("mkdir ~/.local/share/bindhelper");
+    system("mkdir ~/.local/share/bindhelper/resources");
+    str *pat = str_format(cr_str(PATH_TO_CONFIG), getlogin());
+    FILE *f = fopen(pat->str, "w");
     
     List *list = malloc(sizeof(*list));
     
@@ -144,6 +148,7 @@ List *CreateUserConfig() {
 
     for (int i = 0; i < 5; i++){
         fputs(list->line[i], f);
+        // fprintf(f, "%s", list->line[i]);
     }
 
     list->length = 5;
@@ -154,7 +159,8 @@ List *CreateUserConfig() {
 
 
 List * ReadAllLineFromConfig() {
-    FILE *f = fopen(PATH_TO_CONFIG, "r");
+
+    FILE *f = fopen(str_format(cr_str(PATH_TO_CONFIG), getlogin())->str, "r");
 
     List *list;
 

@@ -7,8 +7,9 @@
 #include <string.h>
 #include "my_string.h"
 #include <dirent.h>
+#include <unistd.h>
 
-#define PATH_TO_CONFIG "resources/config.xml"
+#define PATH_TO_CONFIG "/home/%s/.local/share/bindhelper/resources/config.xml"
 #define PATH_TO_TRANSLATOR "\"https://translate.google.com/?hl=ru&sl=en&tl=ru&text=%s%%0A&op=translate\" &"
 
 
