@@ -28,10 +28,11 @@ Bind** create_user_bind(User *u) {
 
 
 Bind * add_bind(User *u, char *name, char *value) {
-    u->binds[u->binds_count] = malloc(sizeof(Bind *));
+    u->binds[u->binds_count] = malloc(sizeof(Bind));
     u->binds[u->binds_count]->name = name;
     u->binds[u->binds_count]->value = value;
     u->binds[u->binds_count]->child = NULL;
+    u->binds[u->binds_count]->children_count = 0;
     u->binds_count++;
 
     if (u->binds_count == 10) {
@@ -51,12 +52,12 @@ ChildBind * add_child_bind(User *u, char *parent_name, char *name, char *value) 
                 tmp->children_length = 10;
                 tmp->children_count = 0;
                 tmp->child = malloc(sizeof(ChildBind *) * tmp->children_length);
-                tmp->child[0] = malloc(sizeof(ChildBind *));
+                tmp->child[0] = malloc(sizeof(ChildBind));
                 tmp->child[0]->name = name;
                 tmp->child[0]->value = value;
                 tmp->children_count++;
             } else {
-                tmp->child[tmp->children_count] = malloc(sizeof(ChildBind *));
+                tmp->child[tmp->children_count] = malloc(sizeof(ChildBind));
                 tmp->child[tmp->children_count]->name = name;
                 tmp->child[tmp->children_count]->value = value;
                 tmp->children_count++;
@@ -360,7 +361,7 @@ Bind** set_binds_from_config(List *config, User *u) {
 
 void write_user_config(User *u) {
     List *conf = prepare_user_config(u);
-    FILE *f = fopen(PATH_TO_CONFIG, "w");
+    FILE *f = fopen(str_format(cr_str(PATH_TO_CONFIG), getlogin())->str, "w");
 
     for(int i = 0; i < conf->count; i++) {
         fputs(conf->line[i], f);
