@@ -33,7 +33,7 @@ static void Bind_free_bind(BIND *b) {
 
 
 BIND *Bind_create_bind(str *name, str *value) {
-    BIND *new = malloc(sizeof(BIND));
+    BIND *new = (BIND *)malloc(sizeof(*new));
     new->bind_name = str_copy(name);
     new->bind_value = str_copy(value);
     new->children_count = 0;
@@ -49,7 +49,7 @@ BIND_STATUS Bind_add_parent(BIND *b, BIND_APP *app) {
         app->binds[0] = b;
     } else {
         app->binds = (BIND **) realloc(app->binds, sizeof(BIND *) * app->bind_count + 1);
-        app->binds[app->bind_count++] = b;
+        app->binds[app->bind_count] = b;
     }
     app->bind_count++;
     return BIND_OK;
@@ -65,7 +65,7 @@ BIND_STATUS Bind_add_child(BIND *b, str *name, str *value) {
     C_BIND *new_child = (C_BIND *) malloc(sizeof(C_BIND));
     new_child->bind_name = str_copy(name);
     new_child->bind_value = str_copy(value);
-    b->bind_children[b->children_count++] = new_child;
+    b->bind_children[b->children_count] = new_child;
     b->children_count++;
 
     return BIND_OK;
@@ -91,8 +91,14 @@ BIND_STATUS Bind_delete_bind(str *b, BIND_APP *app) {
     for(int i = 0; i < app->bind_count; i++) {
         if (strcmp(b->str, app->binds[i]->bind_name->str) == 0) {
             Bind_free_bind(app->binds[i]);
+            if (i != app->bind_count - 1) {
+                for(int j = i; j < app->bind_count - 1; j++) {
+                    app->binds[j] = app->binds[j + 1];
+                }
+            }
         }
     }
+    app->bind_count--;
     return BIND_OK;
 }
 
@@ -143,13 +149,12 @@ BIND_APP *Bind_load_binds_from_disk() {
     str *bufs = null;
     str *bufs_val = null;
     char *lb;
+    bufs = STR((char *)list_get(config, 0), bufs);
    
-    for(int i = 0; i < config->len; i++) {
+    for(int i = 1; i < config->len; ) {
         if (config->len < 2) {
             break;
         }
-        bufs = STR((char *)list_get(config, i), bufs);
-        i++;
 
         if (str_starts_with(bufs, "-p")) {
             bufs = str_new_val(bufs, list_get(config, i++));
@@ -163,7 +168,7 @@ BIND_APP *Bind_load_binds_from_disk() {
             while (str_starts_with(bufs, "-c")) {
                 bufs = str_new_val(bufs, list_get(config, i++));
                 bufs = str_remove_all(bufs, '\n');
-                bufs_val = str_new_val(bufs, list_get(config, i++));
+                bufs_val = str_new_val(bufs_val, list_get(config, i++));
                 bufs_val = str_remove_all(bufs_val, '\n');
                 Bind_add_child(b, bufs, bufs_val);
                 bufs = str_new_val(bufs, list_get(config, i++));

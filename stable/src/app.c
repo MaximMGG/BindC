@@ -75,7 +75,7 @@ int main() {
                     fprintf(stderr, "Do not have bind with name %s \n", flags[3]->str);
                     goto next_cycle;
                 }
-                err_code = Bind_remove_child(temp, flags[4]);
+                err_code = Bind_remove_child(temp, flags[3]);
                 if (!err_code) {
                     printf("Child bind successfully deleted\n");
                     goto next_cycle;
@@ -89,14 +89,14 @@ int main() {
             }
         } else {
             if (flags_count == 2) {
-                if (strcmp(flags[2]->str, "show\n") == 0) {
+                if (strcmp(flags[1]->str, "show") == 0) {
                     Bind_show_binds(app);
                     goto next_cycle;
                 }
                 execute(Bind_get_bindval(flags[1], app));
                 goto next_cycle;
             } else if (flags_count == 3) {
-                execute(Bind_get_bindchildval(flags[2], flags[3],app));
+                execute(Bind_get_bindchildval(flags[1], flags[2],app));
             }
         }
 
@@ -134,5 +134,6 @@ void execute(str *e) {
         fprintf(stderr, "Don't have bind with that name\n");
     } else {
         snprintf(buf, 250, fmt, e->str);
+        system(buf);
     }
 }
