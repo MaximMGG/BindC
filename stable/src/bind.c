@@ -5,6 +5,7 @@
 #define null NULL
 
 static const char *PATH_TO_CONF = "/home/%s/.local/share/bindhelper/resources/bindconf.cfg";
+//                                  /home/maxim/.local/share/bindhelper/resources
 static char *full_path;
 BIND_STATUS bind_status;
 BIND_APP *app;
@@ -50,6 +51,7 @@ BIND_STATUS Bind_add_parent(BIND *b, BIND_APP *app) {
         app->binds = (BIND **) realloc(app->binds, sizeof(BIND *) * app->bind_count + 1);
         app->binds[app->bind_count++] = b;
     }
+    app->bind_count++;
     return BIND_OK;
 }
 
@@ -64,6 +66,7 @@ BIND_STATUS Bind_add_child(BIND *b, str *name, str *value) {
     new_child->bind_name = str_copy(name);
     new_child->bind_value = str_copy(value);
     b->bind_children[b->children_count++] = new_child;
+    b->children_count++;
 
     return BIND_OK;
 }
@@ -117,12 +120,13 @@ BIND_APP *Bind_load_binds_from_disk() {
     }
 
     FILE *f = fopen(path->str, "r");
-    str_free(path);
     if (f == NULL) {
         f = fopen(path->str, "w");
         fclose(f);
+        str_free(path);
         return app;
     }
+    str_free(path);
     char buf[200];
     List *config = list_create(0, M_STRING);
 
@@ -134,18 +138,24 @@ BIND_APP *Bind_load_binds_from_disk() {
 
     fclose(f);
 
-    BIND *b;
+    BIND *b = null;
 
-    str *bufs;
-    str *bufs_val;
-
+    str *bufs = null;
+    str *bufs_val = null;
+    char *lb;
+   
     for(int i = 0; i < config->len; i++) {
-        bufs = STR(list_get(config, i++), bufs);
+        if (config->len < 2) {
+            break;
+        }
+        bufs = STR((char *)list_get(config, i), bufs);
+        i++;
 
         if (str_starts_with(bufs, "-p")) {
-            bufs = str_new_val(list_get(config, i++), buf);
+            bufs = str_new_val(bufs, list_get(config, i++));
             bufs = str_remove_all(bufs, '\n');
-            bufs_val = STR(list_get(config, i++), bufs_val);
+            bufs_val = STR(list_get(config, i), bufs_val);
+            i++;
             bufs_val = str_remove_all(bufs_val, '\n');
             b = Bind_create_bind(bufs, bufs_val);
             bufs = str_new_val(bufs, list_get(config, i++));
@@ -170,21 +180,27 @@ BIND_APP *Bind_load_binds_from_disk() {
 }
 
 BIND_STATUS Bind_save_binds_on_disk(BIND_APP *app) {
-    FILE *f = fopen(full_path, "r");
+    FILE *f = fopen(full_path, "w");
     if (f == null) {
+        bind_status = BIND_CANT_OPEN_CONFIG_FILE;
         return BIND_CANT_OPEN_CONFIG_FILE;
     }
     
     for(int i = 0; i < app->bind_count; i++) {
-        fputs("-p", f);
+        fputs("-p\n", f);
         fputs(app->binds[i]->bind_name->str, f);
+        fputs("\n", f);
         fputs(app->binds[i]->bind_value->str, f);
+        fputs("\n", f);
         for(int j = 0; j < app->binds[i]->children_count; j++) {
-            fputs("-c", f); 
+            fputs("-c\n", f); 
             fputs(app->binds[i]->bind_children[j]->bind_name->str, f);
+            fputs("\n", f);
             fputs(app->binds[i]->bind_children[j]->bind_value->str, f);
+            fputs("\n", f);
         }
     }
+    fclose(f);
     return BIND_OK;
 }
 
@@ -230,10 +246,48 @@ char *Bind_get_error() {
     bind_status = BIND_OK;
 }
 
-void Bind_destroy_app() {
+void Bind_destroy_app(BIND_APP *app) {
     for(int i = 0; i < app->bind_count; i++) {
         Bind_free_bind(app->binds[i]);
     }
     free(app->binds);
     free(app);
+}
+
+#define SHOW_HELP   "flag 'b' -----------------------------\n"                                    \
+                    "b 'bindname' -> open site\n"                                                 \
+                    "b 'bindname 'childbindname' -> open child site'\n"                           \
+                    "b cp 'bindname' 'bindvalue' -> create new parent bind\n"                     \
+                    "b cc 'bindname' 'childbindname' 'childvalue' -> create new child bind\n"     \
+                    "b dp 'bindname' -> delete bind and all chilern binds\n"                      \
+                    "b dc 'bindname' 'childbindname' -> delete child bind\n"                      
+
+
+void Bind_show_help() {
+    printf("%s\n", SHOW_HELP);
+}
+
+void Bind_show_binds(BIND_APP *app) {
+    puts("------------------------------------------------------------------------------------");
+    for(int i = 0; i < app->bind_count; i++) {
+        printf("Parent bind name - %s, value - %s\n",   app->binds[i]->bind_name->str, 
+                                                        app->binds[i]->bind_value->str);
+        for(int j = 0; j < app->binds[i]->children_count; j++) {
+            printf("    Child bind name - %s, value - %s\n", 
+                                app->binds[i]->bind_children[j]->bind_name->str,
+                                app->binds[i]->bind_children[j]->bind_value->str);
+
+        }
+        puts("=====>");
+    }
+    puts("------------------------------------------------------------------------------------");
+}
+
+BIND *Bind_get_bind_byname(BIND_APP *app, str *name) {
+    for(int i = 0; i < app->bind_count; i++) {
+        if (strcmp(app->binds[i]->bind_name->str, name->str) == 0) {
+            return app->binds[i];
+        }
+    }
+    return null;
 }
