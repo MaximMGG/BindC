@@ -8,6 +8,7 @@ namespace BIND {
 
     typedef enum {
         BIND_OK,
+        BIND_ERROR_SAVE_ON_DISK,
 
     } BIND_CODE;
 
@@ -31,7 +32,7 @@ namespace BIND {
             Bind(std::string name, std::string value);
             ~Bind();
             BIND_CODE add_child(Cbind cbind);
-            Cbind get_child(std::string name);
+            Cbind get_child(std::string name) const;
             BIND_CODE delete_child(std::string cname);
     };
     
@@ -42,11 +43,15 @@ namespace BIND {
             ~Bindapp();
 
             BIND_CODE add_parent(Bind bind);
-            Bind get_parent(std::string name);
+            Bind get_parent(std::string name) const;
             BIND_CODE delete_parent(std::string name);
     };
 
     Bindapp load_config_from_disk();
+    BIND_CODE save_config_on_disk(Bindapp& app);
+    void show_help();
+    void show_binds(const Bindapp& app);
+    std::list<std::string> split_input(std::string input);
 
 }
 

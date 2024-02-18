@@ -1,6 +1,7 @@
 #include "../headers/bind.h"
 #include <unistd.h>
 #include <stdio.h>
+#include <iostream>
 
 
 
@@ -34,7 +35,7 @@ namespace BIND {
         return BIND_OK;
     }
 
-    Cbind Bind::get_child(std::string name) {
+    Cbind Bind::get_child(std::string name) const{
         for(Cbind cb : this->children) {
             if (cb.name == name) {
                 return cb;
@@ -65,7 +66,7 @@ namespace BIND {
         return BIND_OK;
     }
 
-    Bind Bindapp::get_parent(std::string name) {
+    Bind Bindapp::get_parent(std::string name) const{
         Bind b;
         for(Bind bind : this->binds) {
             if (bind.name == name) {
@@ -138,6 +139,73 @@ namespace BIND {
         return bapp;
     }
 
+    BIND_CODE save_config_on_disk(Bindapp& app) {
+        FILE *f = fopen(full_path, "w");
+        if (f == NULL) {
+            fprintf(stderr, "Can't open config file %s\n", full_path);
+            return BIND_ERROR_SAVE_ON_DISK;
+        }
 
+        if (app.binds.size() == 0) {
+            return BIND_OK;
+        }
 
+        for(auto& b : app.binds) {
+            fputs("-p\n", f);
+            fputs((b.name + "\n").c_str(), f);
+            fputs((b.value + "\n").c_str(), f);
+
+            for(auto& c : b.children) {
+                fputs("-c\n", f);
+                fputs((c.name + "\n").c_str(), f);
+                fputs((c.value + "\n").c_str(), f);
+            }
+        }
+        return BIND_OK;
+    }
+
+    const char *help =  "flag 'b' -----------------------------\n"
+                        "b 'bindname' -> open site\n"
+                        "b 'bindname 'childbindname' -> open child site'\n"                          
+                        "b cp 'bindname' 'bindvalue' -> create new parent bind\n"                     
+                        "b cc 'bindname' 'childbindname' 'childvalue' -> create new child bind\n"    
+                        "b dp 'bindname' -> delete bind and all chilern binds\n"                      
+                        "b dc 'bindname' 'childbindname' -> delete child bind\n";                      
+
+    void show_help() {
+        std::cout << help;
+    }
+
+    void show_binds(const Bindapp& app) {
+        std::cout << "-------------------------------------------------------------------------------------\n";
+        for(auto& b : app.binds) {
+            printf("Parent bind name - %s, value - %s\n", b.name.c_str(), b.value.c_str());
+            for(auto& c : b.children) {
+                printf("    Child bind name - %s, value - %s\n", c.name.c_str(), c.value.c_str());
+            }
+            std::cout << "              <=====>";
+        }
+        std::cout << "-------------------------------------------------------------------------------------\n";
+    }
+
+    std::list<std::string> split_input(std::string input) {
+        std::list<std::string> split;
+
+        const char* a = input.data();
+        char buf[100];
+        for(int i = 0, j = 0; ; i++) {
+            if (a[i] == ' ') {
+                buf[j] = '\0';
+                split.push_back(buf);
+                j = 0;
+            }
+            if (a[i] == '\n' || a[i] == '\0') {
+                buf[j] = '\0';
+                split.push_back(buf);
+                break;
+            }
+        }
+        return split;
+    }
 }
+
