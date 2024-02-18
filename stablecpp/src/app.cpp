@@ -3,9 +3,10 @@
 #include <iostream>
 
 
+void execute(std::string bind);
+
 
 int main() {
-
     BIND::Bindapp app = BIND::load_config_from_disk();
 
     char buf[200];
@@ -63,16 +64,53 @@ int main() {
                 goto next;
             } else {
                 it++;
+                BIND::Bind temp = app.get_parent(*(it++));
+                temp.delete_child(*it);
+                std::cout << "Child bind successfully deleted\n";
+                goto next;
+            }
+        } else if (*it == "show") {
+                BIND::show_binds(app);
+                goto next;
+        } else {
+            it++;
+            if (input.size() == 2) {
                 BIND::Bind temp = app.get_parent(*it);
+                if (temp.name.size() < 1) {
+                    fprintf(stderr, "Don't have bind with name %s\n", it->c_str());
+                    goto next;
+                }
+                execute(temp.value);
+                goto next;
+            } else if (input.size() == 3) {
+                BIND::Bind btemp = app.get_parent(*(it++));
+                if (btemp.name.size() < 1) {
+                    fprintf(stderr, "Don't have bind with name %s\n", it->c_str());
+                    goto next;
+                }
+                BIND::Cbind ctemp = btemp.get_child(*it);
+                if (ctemp.name.size() < 1) {
+                    fprintf(stderr, "Don't have child bind with name %s\n", it->c_str());
+                    goto next;
+                }
+                execute(ctemp.value);
+                goto next;
+            } else {
+                fprintf(stderr, "Invalid parameters\n");
             }
         }
-
     next:
         fgets(buf, 200, stdin);
+        sb = buf;
     }
-
-
-
-
     return 0;
 }
+
+void execute(std::string bind) {
+    std::string executor {"google-chrome "};
+    executor += bind;
+    system(executor.c_str());
+}
+
+
+

@@ -20,6 +20,9 @@ namespace BIND {
         this->value = value;
     } 
     Cbind::~Cbind() {}
+    bool Cbind::operator==(Cbind& cbind) {
+        return this->name == cbind.name && this->value == cbind.value; 
+    }
 
 
     Bind::Bind() {}
@@ -46,13 +49,13 @@ namespace BIND {
 
     BIND_CODE Bind::delete_child(std::string name) {
         Cbind temp;
-        for(Cbind cb : this->children) {
-            if (cb.name == name) {
-                temp = cb;
+        std::list<Cbind>::iterator it = this->children.begin();
+        for ( ; it != this->children.end(); it++) {
+            if (it->name == name) {
+                this->children.erase(it);
+                break;
             }
         }
-        this->children.remove(temp);
-
         return BIND_OK;
     }
 
@@ -79,12 +82,13 @@ namespace BIND {
 
     BIND_CODE Bindapp::delete_parent(std::string name) {
         Bind b;
-        for(Bind bind : this->binds) {
-            if (bind.name == name) {
-                b = bind;
+        auto it = this->binds.begin();
+        for (; it != this->binds.end(); it++) {
+            if (it->name == name) {
+                this->binds.erase(it);
+                break;
             }
         }
-        this->binds.remove(b);
         return BIND_OK;
     }
 
@@ -102,6 +106,7 @@ namespace BIND {
 
     Bindapp load_config_from_disk() {
         Bindapp bapp;
+        set_full_path();
         FILE *f = fopen(full_path, "r");
         if (f == NULL) {
             f = fopen(full_path, "w");
@@ -198,12 +203,14 @@ namespace BIND {
                 buf[j] = '\0';
                 split.push_back(buf);
                 j = 0;
+                continue;
             }
             if (a[i] == '\n' || a[i] == '\0') {
                 buf[j] = '\0';
                 split.push_back(buf);
                 break;
             }
+            buf[j++] = a[i];
         }
         return split;
     }

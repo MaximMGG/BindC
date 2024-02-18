@@ -20,6 +20,8 @@ namespace BIND {
             Cbind();
             Cbind(std::string name, std::string value);
             ~Cbind();
+
+            bool operator==(Cbind& cbind);
     };
 
     class Bind {
