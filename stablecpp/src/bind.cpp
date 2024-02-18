@@ -69,19 +69,18 @@ namespace BIND {
         return BIND_OK;
     }
 
-    Bind Bindapp::get_parent(std::string name) const{
-        Bind b;
-        for(Bind bind : this->binds) {
-            if (bind.name == name) {
-                b = bind;
-                break;
+    Bind* Bindapp::get_parent(std::string name) const{
+        auto it = this->binds.begin();
+
+        for(int i = 0; i < this->binds.size(); i++, it++) {
+            if (it->name == name) {
+                return (Bind *) &(*it);
             }
         }
-        return b;
+        return NULL;
     }
 
     BIND_CODE Bindapp::delete_parent(std::string name) {
-        Bind b;
         auto it = this->binds.begin();
         for (; it != this->binds.end(); it++) {
             if (it->name == name) {
@@ -123,21 +122,26 @@ namespace BIND {
         }
         std::list<std::string>::iterator it = config.begin();
 
-        std::string t = *it;
-        for(int i = 0; it != config.end(); ) {
-            it++;
-            if (t.find_first_not_of("-p")) {
+        for(; it != config.end(); ) {
+            if (it->find("-p") == 0) {
+                it++;
                 std::string name = *(it++);
+                name.replace(name.end() - 1, name.end(), "\0");
                 std::string value = *(it++);
+                value.replace(value.end() - 1, value.end(), "\0");
                 Bind b {name, value};
 
-                while(t.find_first_not_of("-c")) {
+                while(it->find("-c") == 0) {
+                    it++;
                     name = *(it++);
+                    name.replace(name.end() - 1, name.end(), "\0");
                     value = *(it++);
+                    value.replace(value.end() - 1, value.end(), "\0");
                     b.add_child(Cbind{name, value});
-                    t = *(it++);
                 }
                 bapp.add_parent(b);
+            } else {
+                break;
             }
         }
 
@@ -166,6 +170,7 @@ namespace BIND {
                 fputs((c.value + "\n").c_str(), f);
             }
         }
+        fclose(f);
         return BIND_OK;
     }
 
@@ -188,7 +193,7 @@ namespace BIND {
             for(auto& c : b.children) {
                 printf("    Child bind name - %s, value - %s\n", c.name.c_str(), c.value.c_str());
             }
-            std::cout << "              <=====>";
+            std::cout << "              <=====>\n";
         }
         std::cout << "-------------------------------------------------------------------------------------\n";
     }

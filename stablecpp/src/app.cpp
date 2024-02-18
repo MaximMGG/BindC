@@ -19,7 +19,7 @@ int main() {
         sb = buf;
     }
 
-    while(sb != "exit") {
+    while(sb != "exit\n") {
         std::list<std::string> input = BIND::split_input(sb);
         auto it = input.begin();
         it++;
@@ -41,10 +41,10 @@ int main() {
                 goto next;
             } else {
                 it++;
-                BIND::Bind temp = app.get_parent(*(it++));
+                BIND::Bind *temp = app.get_parent(*(it++));
                 std::string name = *(it++);
                 std::string value = *it;
-                temp.add_child(BIND::Cbind{name, value});
+                temp->add_child(BIND::Cbind{name, value});
                 std::cout << "Child bind successfully added\n";
                 goto next;
             }
@@ -64,8 +64,8 @@ int main() {
                 goto next;
             } else {
                 it++;
-                BIND::Bind temp = app.get_parent(*(it++));
-                temp.delete_child(*it);
+                BIND::Bind* temp = app.get_parent(*(it++));
+                temp->delete_child(*it);
                 std::cout << "Child bind successfully deleted\n";
                 goto next;
             }
@@ -73,22 +73,21 @@ int main() {
                 BIND::show_binds(app);
                 goto next;
         } else {
-            it++;
             if (input.size() == 2) {
-                BIND::Bind temp = app.get_parent(*it);
-                if (temp.name.size() < 1) {
+                BIND::Bind* temp = app.get_parent(*it);
+                if (temp->name.size() < 1) {
                     fprintf(stderr, "Don't have bind with name %s\n", it->c_str());
                     goto next;
                 }
-                execute(temp.value);
+                execute(temp->value);
                 goto next;
             } else if (input.size() == 3) {
-                BIND::Bind btemp = app.get_parent(*(it++));
-                if (btemp.name.size() < 1) {
+                BIND::Bind *btemp = app.get_parent(*(it++));
+                if (btemp->name.size() < 1) {
                     fprintf(stderr, "Don't have bind with name %s\n", it->c_str());
                     goto next;
                 }
-                BIND::Cbind ctemp = btemp.get_child(*it);
+                BIND::Cbind ctemp = btemp->get_child(*it);
                 if (ctemp.name.size() < 1) {
                     fprintf(stderr, "Don't have child bind with name %s\n", it->c_str());
                     goto next;
@@ -102,6 +101,13 @@ int main() {
     next:
         fgets(buf, 200, stdin);
         sb = buf;
+    }
+
+    BIND::BIND_CODE code = BIND::save_config_on_disk(app);
+    if (code == BIND::BIND_OK) {
+        std::cout << "Bye\n";
+    } else {
+        std::cout << "Thomething went wrong, bind do not save\n";
     }
     return 0;
 }

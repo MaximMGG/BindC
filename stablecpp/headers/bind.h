@@ -45,7 +45,7 @@ namespace BIND {
             ~Bindapp();
 
             BIND_CODE add_parent(Bind bind);
-            Bind get_parent(std::string name) const;
+            Bind* get_parent(std::string name) const;
             BIND_CODE delete_parent(std::string name);
     };
 
