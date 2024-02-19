@@ -24,7 +24,7 @@ int main() {
     int err_code = 0;
 
     while (strcmp(buf, "exit\n") != 0) {
-        flags = string_split(buf, ' ');
+        flags = string_split(buf, ' ', &flags_count);
         if (flags_count < 2) {
             printf("Do not have any option with this command %s\n", buf);
             goto next_cycle;

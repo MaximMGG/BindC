@@ -4,30 +4,31 @@
 
 
 
-char **string_split(char *str, char pattern) {
+char **string_split(char *str, char pattern, int *list_c) {
 
     int len = strlen(str);
     char buf[200];
     char **list = (char **) malloc(sizeof(char *) * 6);
-    int list_c = 0;
+    *list_c = 0;
 
     for(int i = 0, j = 0; i < len; i++) {
+        if (str[i] == '\n' || str[i] == '\0') {
+            buf[j] = '\0';
+            list[*list_c] = (char *) malloc(strlen(buf) + 1);
+            strcpy(list[*list_c], buf);
+            (*list_c)++;
+            break;
+        }
+        if (*list_c == 5) {
+            return list;
+        }
         if(str[i] != pattern) {
             buf[j++] = str[i];
         } else {
             buf[j] = '\0';
             j = 0;
-            list[list_c++] = (char *) malloc(strlen(buf) + 1);
-            strcpy(list[list_c], buf);
-        }
-        if (str[i] == '\n' || str[i] == '\0') {
-            buf[j] = '\0';
-            list[list_c] = (char *) malloc(strlen(buf) + 1);
-            strcpy(list[list_c++], buf);
-            break;
-        }
-        if (list_c == 5) {
-            return list;
+            list[*list_c] = (char *) malloc(strlen(buf) + 1);
+            strcpy(list[(*list_c)++], buf);
         }
     }
     return list;
