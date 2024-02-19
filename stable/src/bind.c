@@ -38,7 +38,7 @@ BIND *Bind_create_bind(char *name, char *value) {
     new->bind_name = (char *) malloc(sizeof(char) * strlen(name) + 1);
     new->bind_value = (char *) malloc(sizeof(char) * strlen(value) + 1);
     strcpy(new->bind_name, name);
-    strcpy(new->bind_value, name);
+    strcpy(new->bind_value, value);
     new->bind_children = NULL;
     new->children_count = 0;
 
@@ -68,7 +68,7 @@ BIND_STATUS Bind_add_child(BIND *b, char *name, char *value) {
     new_child->bind_name = (char *) malloc(sizeof(char) * strlen(name) + 1);
     new_child->bind_value = (char *) malloc(sizeof(char) * strlen(value) + 1);
     strcpy(new_child->bind_name, name);
-    strcpy(new_child->bind_value, name);
+    strcpy(new_child->bind_value, value);
     b->bind_children[b->children_count] = new_child;
     b->children_count++;
 

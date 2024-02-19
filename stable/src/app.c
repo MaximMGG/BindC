@@ -4,7 +4,7 @@
 
 
 void end_app(BIND_APP *app);
-void execute(str *e);
+void execute(char *e);
 
 int main() {
     BIND_APP *app = Bind_load_binds_from_disk();
@@ -17,30 +17,30 @@ int main() {
     }
 
 
-    char *sbuf = NULL;
+    // char *sbuf = buf;
     char **flags = NULL;
     int flags_count = 0;
     BIND *temp = NULL;
     int err_code = 0;
 
     while (strcmp(buf, "exit\n") != 0) {
-        flags = string_split(sbuf, ' ');
+        flags = string_split(buf, ' ');
         if (flags_count < 2) {
             printf("Do not have any option with this command %s\n", buf);
             goto next_cycle;
         }
-        if (strcmp(flags[1]->str, "cp") == 0) {
+        if (strcmp(flags[1], "cp") == 0) {
             if (flags_count == 4) {
                 err_code = Bind_add_parent(Bind_create_bind(flags[2], flags[3]), app);
                 if (!err_code) {
                     printf("Bind successfully added\n");
                 }
             }
-        } else if (strcmp(flags[1]->str, "cc") == 0) {
+        } else if (strcmp(flags[1], "cc") == 0) {
             if (flags_count == 5) {
                 temp = Bind_get_bind_byname(app, flags[2]);
                 if (temp == NULL) {
-                    fprintf(stderr, "Do not have bind with name %s \n", flags[2]->str);
+                    fprintf(stderr, "Do not have bind with name %s \n", flags[2]);
                     goto next_cycle;
                 }
                 err_code = Bind_add_child(temp, flags[3], flags[4]);
@@ -54,7 +54,7 @@ int main() {
                 printf("Thomething miss, try agane\n");
                 goto next_cycle;
             }
-        } else if (strcmp(flags[1]->str, "dp") == 0) {
+        } else if (strcmp(flags[1], "dp") == 0) {
             if (flags_count == 3) {
                 err_code = Bind_delete_bind(flags[2], app);
                 if (!err_code) {
@@ -68,11 +68,11 @@ int main() {
                 printf("Thomething miss, try agane\n");
                 goto next_cycle;
             }
-        } else if (strcmp(flags[1]->str, "dc") == 0) {
+        } else if (strcmp(flags[1], "dc") == 0) {
             if (flags_count == 4) {
                 temp = Bind_get_bind_byname(app, flags[2]);
                 if (temp == NULL) {
-                    fprintf(stderr, "Do not have bind with name %s \n", flags[3]->str);
+                    fprintf(stderr, "Do not have bind with name %s \n", flags[3]);
                     goto next_cycle;
                 }
                 err_code = Bind_remove_child(temp, flags[3]);
@@ -89,7 +89,7 @@ int main() {
             }
         } else {
             if (flags_count == 2) {
-                if (strcmp(flags[1]->str, "show") == 0) {
+                if (strcmp(flags[1], "show") == 0) {
                     Bind_show_binds(app);
                     goto next_cycle;
                 }
@@ -102,9 +102,8 @@ int main() {
 
                 
 next_cycle:
-        str_free(sbuf);
         for(int i = 0; i < flags_count; i++) {
-            str_free(flags[i]);
+            free(flags[i]);
         }
         free(flags);
         fgets(buf, 200, stdin);
@@ -127,13 +126,13 @@ void end_app(BIND_APP *app) {
     exit(EXIT_SUCCESS);
 }
 
-void execute(str *e) {
+void execute(char *e) {
     char buf[250];
     char *fmt = "google-chrome %s";
     if (e == NULL) {
         fprintf(stderr, "Don't have bind with that name\n");
     } else {
-        snprintf(buf, 250, fmt, e->str);
+        snprintf(buf, 250, fmt, e);
         system(buf);
     }
 }

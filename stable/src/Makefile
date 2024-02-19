@@ -1,4 +1,4 @@
 
 
 all:
-	gcc app.c bind.c -l_util -g
+	gcc app.c bind.c util.c -l_util -g

@@ -22,8 +22,8 @@ char **string_split(char *str, char pattern) {
         }
         if (str[i] == '\n' || str[i] == '\0') {
             buf[j] = '\0';
-            list[list_c++] = (char *) malloc(strlen(buf) + 1);
-            strcpy(list[list_c], buf);
+            list[list_c] = (char *) malloc(strlen(buf) + 1);
+            strcpy(list[list_c++], buf);
             break;
         }
         if (list_c == 5) {
@@ -35,10 +35,10 @@ char **string_split(char *str, char pattern) {
 
 int string_starts_with(char *str, char *pattern) {
     int count = 0;
-    int str_len = strlen(str);
+    int str_len = strlen(pattern);
     for(int i = 0; i < str_len; i++) {
         if (str[i] != pattern[i]) {
-            break;
+            return 0;
         }
         count++;
     }
