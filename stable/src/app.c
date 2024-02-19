@@ -1,4 +1,5 @@
 #include "../headers/bind.h"
+#include "../headers/util.h"
 #include <stdio.h>
 
 
@@ -16,15 +17,14 @@ int main() {
     }
 
 
-    str *sbuf = NULL;
-    str **flags = NULL;
+    char *sbuf = NULL;
+    char **flags = NULL;
     int flags_count = 0;
     BIND *temp = NULL;
     int err_code = 0;
 
     while (strcmp(buf, "exit\n") != 0) {
-        sbuf = STR(buf, sbuf);
-        flags = str_split(sbuf, ' ', &flags_count);
+        flags = string_split(sbuf, ' ');
         if (flags_count < 2) {
             printf("Do not have any option with this command %s\n", buf);
             goto next_cycle;

@@ -4,13 +4,13 @@
 #include <util/m_list.h>
 
 typedef struct {
-    str *bind_name;
-    str *bind_value;
+    char *bind_name;
+    char *bind_value;
 } C_BIND;
 
 typedef struct {
-    str *bind_name;
-    str *bind_value;
+    char *bind_name;
+    char *bind_value;
     C_BIND **bind_children;
     unsigned int children_count;
 } BIND;
@@ -27,17 +27,18 @@ typedef enum {
     BIND_CANT_FIND_BIND_WITH_NAME,
 }BIND_STATUS;
 
-BIND *Bind_create_bind(str *name, str *value);
+BIND *Bind_create_bind(char *name, char *value);
 BIND_STATUS Bind_add_parent(BIND *b, BIND_APP *app);
-BIND_STATUS Bind_add_child(BIND *b, str *name, str *value);
-BIND_STATUS Bind_remove_child(BIND *b, str *name);
-BIND_STATUS Bind_delete_bind(str *b, BIND_APP *app);
+BIND_STATUS Bind_add_child(BIND *b, char *name, char *value);
+BIND_STATUS Bind_remove_child(BIND *b, char *name);
+BIND_STATUS Bind_delete_bind(char *b, BIND_APP *app);
+BIND *Bind_get_bind_byname(BIND_APP *app, char *name);
 
 void Bind_show_help();
 void Bind_show_binds(BIND_APP *app);
 
-str *Bind_get_bindval(str *name, BIND_APP *app);
-str *Bind_get_bindchildval(str *pname, str *cname, BIND_APP *app);
+char *Bind_get_bindval(char *name, BIND_APP *app);
+char *Bind_get_bindchildval(char *pname, char *cname, BIND_APP *app);
 
 
 BIND_APP *Bind_load_binds_from_disk();
@@ -45,7 +46,7 @@ BIND_STATUS Bind_save_binds_on_disk(BIND_APP *app);
 
 char *Bind_get_error();
 
-void Bind_destroy_app();
+void Bind_destroy_app(BIND_APP *app);
 
 
 #endif //_BIND_H_
