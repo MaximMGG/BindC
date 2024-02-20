@@ -1,6 +1,5 @@
 #ifndef _BIND_H_
 #define _BIND_H_
-#include <util/m_string.h>
 #include <util/m_list.h>
 
 typedef struct {

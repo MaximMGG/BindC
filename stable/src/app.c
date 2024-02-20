@@ -1,6 +1,8 @@
 #include "../headers/bind.h"
 #include "../headers/util.h"
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 
 void end_app(BIND_APP *app);
